@@ -62,10 +62,17 @@ List<BankAccount> accounts = new List<BankAccount>
     new SavingsAccount("Sam Odhiammb", 2000, 0.05m)
 };
 
+
+
 foreach (BankAccount account in accounts)
 {
     account.OnDeposit += msg => Console.WriteLine($"[DEPOSIT] {msg}");
     account.OnWithdraw += msg => Console.WriteLine($"[WITHDRAW] {msg}");
+}
+
+foreach (BankAccount account in accounts)
+{
+    account.Deposit(500, DateTime.Now.AddDays(3));
 }
 
 Console.WriteLine("Display Info");
@@ -74,4 +81,16 @@ foreach (BankAccount account in accounts)
 {
     account.DisplayInfo();
     Console.WriteLine("---");
+}
+
+Console.WriteLine("\n Withdraw $300 from everyone ");
+foreach (BankAccount account in accounts)
+{
+    account.Withdraw(300);
+}
+
+Console.WriteLine("\nWithdraw $800 from everyone");
+foreach(BankAccount account in accounts)
+{
+    account.Withdraw(800);
 }
