@@ -18,8 +18,8 @@ bankAccount1.OnWithdraw += HandleWithdraw;
 
 bankAccount1.Deposit(50000);
 bankAccount1.Withdraw(100);
-bankAccount1.Withdraw(1000); // should fail - insufficient funds
-bankAccount1.Deposit(-50);   // should fail - negative amount
+bankAccount1.Withdraw(1000); // insufficient funds
+bankAccount1.Deposit(-50);   // negative amount
 
 
 Console.WriteLine($"Owner: {bankAccount1.Owner}");
@@ -35,3 +35,18 @@ void HandleWithdraw(string message)
 {
     Console.WriteLine($"[WITHDRAW EVENT] {message}");
 }
+
+Console.WriteLine(" SAVINGS ACCOUNT ");
+SavingsAccount savings = new SavingsAccount("Noel Odero", 1000, 0.05m);
+savings.OnDeposit += msg => Console.WriteLine($"[DEPOSIT] {msg}");
+savings.OnWithdraw += msg => Console.WriteLine($"[WITHDRAW] {msg}");
+
+savings.DisplayInfo();
+Console.WriteLine("---------------------------");
+
+savings.Deposit(500);
+savings.Withdraw(200);
+savings.Withdraw(200);
+savings.Withdraw(200);
+savings.Withdraw(200); // limit reached
+savings.ApplyInterest();

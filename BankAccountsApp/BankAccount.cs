@@ -29,10 +29,6 @@ namespace BankAccountsApp
                 Console.WriteLine("Deposit amount must be positive");
                 return;
             }
-            if(amount > 20000)
-            {
-                Console.WriteLine("AML Deposit limit reached");
-            }
 
             Balance += amount;
             OnDeposit?.Invoke($"Deposited {amount:C}. New balance: {Balance:C}");
