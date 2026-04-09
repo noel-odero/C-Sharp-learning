@@ -22,6 +22,7 @@ namespace BankAccountsApp
         public event TransactionHandler? OnWithdraw;
 
         // methods
+        // Compile time polymorphism: Method overloading: Same method name, different parameters
         public void Deposit(decimal amount)
         {
             if(amount <= 0)
@@ -32,6 +33,35 @@ namespace BankAccountsApp
 
             Balance += amount;
             OnDeposit?.Invoke($"Deposited {amount:C}. New balance: {Balance:C}");
+        }
+        
+        public void Deposit(decimal amount, string description)
+        {
+            if(amount <= 0)
+            {
+                Console.WriteLine("Deposit amount must be positive");
+                return;
+            }
+            Balance += amount;
+            OnDeposit?.Invoke($"Deposited {amount:C} ({description}). New balance: {Balance:C}");
+        }
+
+        public void Deposit(decimal amount, DateTime scheduledDate)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine("Deposit amount must be positive.");
+                return;
+            }
+            if (scheduledDate <= DateTime.Now)
+            {
+                Console.WriteLine("Scheduled date must be in the future.");
+                return;
+            }
+            
+            Console.WriteLine($"Deposit of {amount:C} scheduled for {scheduledDate:D}.");
+            Balance += amount;  
+            OnDeposit?.Invoke($"Scheduled deposit of {amount:C} applied. New balance: {Balance:C}");
         }
 
         // virtual - children can override this

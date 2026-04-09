@@ -7,6 +7,7 @@ namespace BankAccountsApp
         private const int MaxWithdrawals = 3; //limit per month
 
 
+        // Runtime Polymorphism: method overriding
         public override void Withdraw(decimal amount)
         {
             if(_withdrawalCount >= MaxWithdrawals)
