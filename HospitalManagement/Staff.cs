@@ -6,7 +6,7 @@ namespace HospitalManagementSystem
         public string Department { get; set; } = department;
         public decimal Salary { get; private set; } = salary;
 
-        public void DisplayInfo()
+        public override void DisplayInfo()
         {
             base.DisplayInfo();
             Console.WriteLine($"EmployeeId: {EmployeeId}");
