@@ -27,5 +27,9 @@ namespace HospitalManagementSystem
             Console.WriteLine($"WardAssignment: {WardAssignment}");
             Console.WriteLine($"ShiftType: {ShiftType}");
         }
+        public override void GenerateReport()
+        {
+            Console.WriteLine($"Nursing Report - Nurse {LastName} | Ward: {WardAssignment} | Shift: {ShiftType}");
+        } 
     }
 }

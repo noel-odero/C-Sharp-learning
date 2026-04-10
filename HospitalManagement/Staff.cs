@@ -14,5 +14,7 @@ namespace HospitalManagementSystem
             Console.WriteLine($"Salary: {Salary}");
         }
 
+        public abstract void GenerateReport();
+
     }
 }

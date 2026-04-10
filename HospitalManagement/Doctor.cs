@@ -16,5 +16,10 @@ namespace HospitalManagementSystem
             Console.WriteLine($"Specialization: {Specialization}");
             Console.WriteLine($"LicenseNumber: {LicenseNumber}");
         }
+
+        public override void GenerateReport()
+        {
+            Console.WriteLine($"Medical Report - Dr.{LastName} | Specialization: {Specialization} | Department: {Department}");
+        } 
     }
 }
