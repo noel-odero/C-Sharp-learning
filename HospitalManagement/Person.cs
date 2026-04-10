@@ -1,6 +1,6 @@
 namespace HospitalManagementSystem
 {
-    public class Person(string firstName, string lastName, DateTime dateOfBirth, string email, string phoneNumber)
+    public abstract class Person(string firstName, string lastName, DateTime dateOfBirth, string email, string phoneNumber)
     {
         public string FirstName { get; set; } = firstName;
         public string LastName { get; set;} = lastName;

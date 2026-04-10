@@ -12,5 +12,10 @@ namespace HospitalManagementSystem
         {
             Diagnoses.Add(diagnosis);
         }
+
+        public virtual string GetPatientType()
+        {
+            return "Patient";
+        }
     }
 }
