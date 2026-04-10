@@ -1,6 +1,6 @@
 namespace HospitalManagementSystem
 {
-    public class Staff(string firstName, string lastName, DateTime dateOfBirth, string email, string phoneNumber, string department, decimal salary): Person(firstName, lastName, dateOfBirth, email, phoneNumber)
+    public abstract class Staff(string firstName, string lastName, DateTime dateOfBirth, string email, string phoneNumber, string department, decimal salary): Person(firstName, lastName, dateOfBirth, email, phoneNumber)
     {
         public Guid EmployeeId { get; private set; } = Guid.NewGuid();
         public string Department { get; set; } = department;

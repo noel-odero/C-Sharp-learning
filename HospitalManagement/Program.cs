@@ -1,32 +1,63 @@
 ﻿using HospitalManagementSystem;
 
-Person noel = new Person("Anjeline", "Noel", new DateTime(2004, 12, 26), "noel@email.com", "250794019723");
+Doctor doctor = new Doctor(
+    "Anjeline",
+    "Noel",
+    new DateTime(1990, 12, 26),
+    "doctor@email.com",
+    "250794019723",
+    "General Medicine",
+    2500m,
+    "Internal Medicine",
+    "LIC-DR-001");
 
-Console.WriteLine($"Name: {noel.FirstName} {noel.LastName}");
-Console.WriteLine($"Date of Birth: {noel.DateOfBirth.ToString("MMMM dd, yyyy")}");
-Console.WriteLine($"Email: {noel.Email}");
-Console.WriteLine($"Phone: {noel.PhoneNumber}");
+Nurse nurse = new Nurse(
+    "Awino",
+    "Lena",
+    new DateTime(1995, 8, 12),
+    "nurse@email.com",
+    "250700000001",
+    "Emergency",
+    1600m,
+    "Ward A",
+    "Day");
 
+Inpatient inpatient = new Inpatient(
+    "Odero",
+    "Mark",
+    new DateTime(2001, 4, 5),
+    "inpatient@email.com",
+    "250700000002",
+    "O+",
+    "Penicillin",
+    12,
+    "Ward A");
 
-Patient nick = new Patient("Nick", "lemy", new DateTime(2004, 12, 26), "noel@email.com", "250794019723", "D+", "Dust");
+Outpatient outpatient = new Outpatient(
+    "Angie",
+    "Faith",
+    new DateTime(2000, 7, 18),
+    "outpatient@email.com",
+    "250700000003",
+    "A-",
+    "None",
+    DateTime.Today.AddDays(2),
+    "Dr. Noel");
 
-nick.AddDiagnosis("Flu");
-nick.AddDiagnosis("Malaria");
-nick.AddDiagnosis("Allergy");
+doctor.DisplayInfo();
+doctor.Prescribe("Amoxicillin", inpatient.FirstName);
+Console.WriteLine();
 
-foreach (string diagnosis in nick.Diagnoses )
-{
-    Console.WriteLine(diagnosis);
-}
+nurse.DisplayInfo();
+nurse.SetShiftType("Night");
+nurse.AdministerMedication("Paracetamol", inpatient.FirstName);
+Console.WriteLine();
 
-Console.WriteLine($"Name: {nick.FirstName} {nick.LastName}");
-Console.WriteLine($"Date of Birth: {nick.DateOfBirth.ToString("MMMM dd, yyyy")}");
-Console.WriteLine($"Email: {nick.Email}");
-Console.WriteLine($"Phone: {nick.PhoneNumber}");
-Console.WriteLine($"Blood type : {nick.BloodType}");
-Console.WriteLine($"Allergies: {nick.Allergies}");
-Console.WriteLine($"Medical Record Number: {nick.MedicalRecordNumber}");
+inpatient.AddDiagnosis("Malaria");
+inpatient.AddDiagnosis("Anemia");
+inpatient.DisplayInfo();
+Console.WriteLine();
 
-noel.SetAge(21);
-Console.WriteLine(noel.Age);
+outpatient.AddDiagnosis("Seasonal Allergy");
+outpatient.DisplayInfo();
 
