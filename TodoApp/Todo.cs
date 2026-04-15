@@ -16,7 +16,7 @@ namespace TodoListApp
 
         public string GetSummary()
         {
-            return $"[{Status.ToString().ToUpper()} {Title} {Priority} - {CreatedAt}]";
+            return $"[{Status.ToString().ToUpper()}] {Title} {Priority} - {CreatedAt}]";
         }
         
     }
