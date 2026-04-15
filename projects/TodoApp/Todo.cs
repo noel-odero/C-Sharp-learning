@@ -31,6 +31,13 @@ namespace TodoListApp
         }
     }
 
+    public class RecurringTast(string title, Priority priority, int repeatEveryDays, string description="") : TodoItem(title, priority, description)
+    {
+        public int RepeatEveryDays {get;  set; } = repeatEveryDays;
+        public DateTime NextOccurrence => CreatedAt.AddDays(RepeatEveryDays);
+
+    }
+
 
 
 
