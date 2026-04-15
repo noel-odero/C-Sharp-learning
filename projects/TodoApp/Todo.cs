@@ -20,4 +20,19 @@ namespace TodoListApp
         }
         
     }
+
+    public class DeadlinedTask(string title, Priority priority,   DateTime dueDate, string description=""): TodoItem(title, priority, description)
+    {
+        public DateTime DueDate {get; set;} = dueDate;
+
+        public bool IsOverDue()
+        {
+            return DateTime.Now > DueDate && Status != Status.Done;
+        }
+    }
+
+
+
+
+
 }
