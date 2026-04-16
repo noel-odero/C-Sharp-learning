@@ -14,10 +14,9 @@ namespace TodoListApp
         public DateTime CreatedAt{get; private set;} = DateTime.Now;
 
 
-        public string GetSummary()
-        {
-            return $"[{Status.ToString().ToUpper()}] {Title} {Priority} - {CreatedAt}]";
-        }
+        public abstract string GetSummary();
+
+
         
     }
 
@@ -29,12 +28,22 @@ namespace TodoListApp
         {
             return DateTime.Now > DueDate && Status != Status.Done;
         }
+        public override string GetSummary()
+        {
+            return $"[{Status.ToString().ToUpper()}] {Title} {Priority} - Created at: {CreatedAt}, Duedate: {DueDate}, overdue: {IsOverDue}";
+        }
+
     }
 
     public class RecurringTast(string title, Priority priority, int repeatEveryDays, string description="") : TodoItem(title, priority, description)
     {
         public int RepeatEveryDays {get;  set; } = repeatEveryDays;
         public DateTime NextOccurrence => CreatedAt.AddDays(RepeatEveryDays);
+
+        public override string GetSummary()
+        {
+            return $"[{Status.ToString().ToUpper()}] {Title} {Priority} - Created at: {CreatedAt}, NextOccurrenceOn: {NextOccurrence}]";
+        }
 
     }
 
