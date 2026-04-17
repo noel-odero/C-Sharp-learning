@@ -45,7 +45,7 @@ namespace TodoListApp
             return _items.Where(x => x.Priority == priority ).ToList();
         }
 
-        public void Update(Guid id, string newTitle, string newDescription, PriorityQueue newPriority)
+        public void Update(Guid id, string newTitle, string newDescription, Priority newPriority)
         {
             TodoItem? item = _items.FirstOrDefault(x => x.Id == id);
             if(item is null)
