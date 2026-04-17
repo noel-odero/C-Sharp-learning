@@ -1,27 +1,88 @@
-﻿using TodoListApp;
+﻿using TodoApp.Models;
+using TodoApp.Repositories;
+using TodoApp.Services;
 
-var manager = new TodoManager();
-
-manager.Add(new DeadlinedTask("Fix login bug", Priority.High, DateTime.Now.AddDays(2)));
-manager.Add(new RecurringTast("Write tests", Priority.Low, 7, "Unit tests"));
-manager.Add(new DeadlinedTask("Update docs", Priority.Medium, DateTime.Now.AddDays(5)));
-
-Console.WriteLine("All todos:");
-foreach (var todo in manager.GetAll())
+class Program
 {
-    Console.WriteLine(todo.GetSummary());
-}
+    static void Main()
+    {
+        var repository = new InMemoryTaskRepository();
+        var manager = new TaskManager(repository);
 
-Console.WriteLine();
-Console.WriteLine("High priority todos:");
-foreach (var todo in manager.GetByPriority(Priority.High))
-{
-    Console.WriteLine(todo.GetSummary());
-}
+        Console.WriteLine("=== TODO CLI APP ===");
 
-Console.WriteLine();
-Console.WriteLine("Todos sorted by title:");
-foreach (var todo in manager.GetAll().OrderBy(todo => todo.Title))
-{
-    Console.WriteLine(todo.GetSummary());
+        while (true)
+        {
+            Console.Write("\nEnter what you want to do: add, list, done, undone, delete, pending, completed, overdue, exit ");
+            var input = Console.ReadLine()?.Trim().ToLower();
+
+            switch (input)
+            {
+                case "add":
+                    Console.Write("Title: ");
+                    var title = Console.ReadLine();
+
+                    Console.Write("Priority (low, medium, high): ");
+                    var priorityInput = Console.ReadLine()?.ToLower();
+
+                    Priority priority = priorityInput switch
+                    {
+                        "low" => Priority.Low,
+                        "medium" => Priority.Medium,
+                        "high" => Priority.High,
+                        _ => Priority.Low
+                    };
+
+                    Console.Write("Due date (yyyy-mm-dd) or leave blank: ");
+                    var dueInput = Console.ReadLine();
+
+                    DateTime? dueDate = null;
+                    if (DateTime.TryParse(dueInput, out var parsedDate))
+                    {
+                        dueDate = parsedDate;
+                    }
+
+                    manager.AddTask(title!, priority, dueDate);
+                    break;
+
+                case "list":
+                    manager.ShowAllTasks();
+                    break;
+
+                case "done":
+                    Console.Write("Task ID: ");
+                    manager.MarkComplete(int.Parse(Console.ReadLine()!));
+                    break;
+
+                case "undone":
+                    Console.Write("Task ID: ");
+                    manager.MarkIncomplete(int.Parse(Console.ReadLine()!));
+                    break;
+
+                case "delete":
+                    Console.Write("Task ID: ");
+                    manager.DeleteTask(int.Parse(Console.ReadLine()!));
+                    break;
+
+                case "pending":
+                    manager.ShowPendingTasks();
+                    break;
+
+                case "completed":
+                    manager.ShowCompletedTasks();
+                    break;
+
+                case "overdue":
+                    manager.ShowOverdueTasks();
+                    break;
+
+                case "exit":
+                    return;
+
+                default:
+                    Console.WriteLine("Commands: add, list, done, undone, delete, pending, completed, overdue, exit");
+                    break;
+            }
+        }
+    }
 }

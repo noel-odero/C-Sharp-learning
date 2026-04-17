@@ -1,63 +1,84 @@
-namespace TodoListApp
+using TodoApp.Models;
+using TodoApp.Repositories;
+
+namespace TodoApp.Services;
+
+public class TaskManager
 {
-    public class TodoManager
+    private readonly ITaskRepository _repository;
+    private int _nextId = 1;
+
+    public TaskManager(ITaskRepository repository)
     {
-        private readonly List<TodoItem> _items = new();
+        _repository = repository;
+    }
 
+    public void AddTask(string title, Priority priority, DateTime? dueDate)
+    {
+        var task = new TodoItem(_nextId++, title, priority, DateTime.Now, dueDate);
+        _repository.Add(task);
+    }
 
-        public void Add(TodoItem item)
+    public void DeleteTask(int id)
+    {
+        _repository.Delete(id);
+    }
+
+    public void MarkComplete(int id)
+    {
+        var task = _repository.GetById(id);
+        task?.MarkComplete();
+    }
+
+    public void MarkIncomplete(int id)
+    {
+        var task = _repository.GetById(id);
+        task?.MarkIncomplete();
+    }
+
+    public void ShowAllTasks()
+    {
+        var tasks = _repository.GetAll();
+
+        if (!tasks.Any())
         {
-            if(item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-            _items.Add(item);
+            Console.WriteLine("No tasks available.");
+            return;
         }
 
-        public bool Remove(Guid id)
+        foreach (var task in tasks)
         {
-            TodoItem? item = _items.FirstOrDefault(x=> x.Id == id);
-            if(item is null)
-            {
-                return false;
-            }
-            _items.Remove(item);
-            return true;
+            Console.WriteLine(task);
         }
+    }
 
-        public List<TodoItem> GetAll()
+    public void ShowCompletedTasks()
+    {
+        var tasks = _repository.GetAll().Where(t => t.IsCompleted);
+
+        foreach (var task in tasks)
         {
-            return _items.ToList();
+            Console.WriteLine(task);
         }
+    }
 
-        public TodoItem? GetById(Guid id)
+    public void ShowPendingTasks()
+    {
+        var tasks = _repository.GetAll().Where(t => !t.IsCompleted);
+
+        foreach (var task in tasks)
         {
-            return _items.FirstOrDefault(x => x.Id == id);
+            Console.WriteLine(task);
         }
+    }
 
-        public List<TodoItem> GetByStatus(Status status)
+    public void ShowOverdueTasks()
+    {
+        var tasks = _repository.GetAll().Where(t => t.IsOverdue());
+
+        foreach (var task in tasks)
         {
-            return _items.Where(x => x.Status == status).ToList();
+            Console.WriteLine(task);
         }
-
-        public List<TodoItem> GetByPriority(Priority priority)
-        {
-            return _items.Where(x => x.Priority == priority ).ToList();
-        }
-
-        public void Update(Guid id, string newTitle, string newDescription, Priority newPriority)
-        {
-            TodoItem? item = _items.FirstOrDefault(x => x.Id == id);
-            if(item is null)
-            {
-                throw new InvalidOperationException($"Todo with id {id} not found");
-            }
-
-            item.Title = newTitle;
-            item.Description = newDescription;
-            item.Priority = newPriority;
-        }
-
-        
     }
 }
