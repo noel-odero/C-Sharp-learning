@@ -3,6 +3,8 @@ using TodoApp.Repositories;
 
 namespace TodoApp.Services;
 
+// defines what the app should do with data.
+
 public class TaskManager
 {
     private readonly ITaskRepository _repository;
