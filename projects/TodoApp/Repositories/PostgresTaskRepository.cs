@@ -41,10 +41,41 @@ public class PostgresTaskRepository : ITaskRepository
         throw new NotImplementedException();
     }
 
-    public List<TodoItem> GetAll()
+   public List<TodoItem> GetAll()
+{
+    var tasks = new List<TodoItem>();
+
+    using var conn = new NpgsqlConnection(_connectionString);
+    conn.Open();
+
+    const string sql = @"
+        SELECT id, title, is_completed, created_at, due_date, priority
+        FROM todos
+        ORDER BY id;";
+
+    using var cmd = new NpgsqlCommand(sql, conn);
+    using var reader = cmd.ExecuteReader();
+
+    while (reader.Read())
     {
-        throw new NotImplementedException();
+        var id = reader.GetInt32(0);
+        var title = reader.GetString(1);
+        var isCompleted = reader.GetBoolean(2);
+        var createdAt = reader.GetDateTime(3);
+        DateTime? dueDate = reader.IsDBNull(4) ? null : reader.GetDateTime(4);
+        var priority = (Priority)reader.GetInt16(5);
+
+        var task = new TodoItem(id, title, priority, createdAt, dueDate);
+        if (isCompleted)
+        {
+            task.MarkComplete();
+        }
+
+        tasks.Add(task);
     }
+
+    return tasks;
+}
     public void Update(TodoItem task)
     {
         throw new NotImplementedException();
