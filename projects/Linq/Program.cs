@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Reflection.Metadata.Ecma335;
 
 int[] numbers = new[] { 2, 3, 4, 5, 3, 6, 7 };
 var result = from n in numbers where n < 5 select n;
@@ -27,6 +29,22 @@ static class wheres
             {
                 yield return i;
             }
+        }
+    }
+
+
+    public static IEnumerable<T> Where<T>(this IEnumerable<T> items, FunctionPointerAttributes<T, bool> gauntlet)
+    {
+        foreach(T item in items)
+        {
+            yield return item;
+        }
+    }
+
+    public static IEnumerable<Random> Select<T,R>(this IEnumerable<T> items, Func<T, R> transform){
+        foreach(T item in items)
+        {
+            yield return transform(item);
         }
     }
 }
