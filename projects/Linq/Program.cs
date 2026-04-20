@@ -18,30 +18,35 @@ foreach (int i in result)
     Console.WriteLine(i);
 }
 
-static class wheres
+static class Wheres
 {
-    public static IEnumerable<int> Where(this int[] ints, Func<int, bool> gauntlet)
+    // public static IEnumerable<int> Where(this int[] ints, Func<int, bool> gauntlet)
+    // {
+    //     Console.WriteLine("My Where extension");
+    //     foreach (int i in ints)
+    //     {
+    //         if (gauntlet(i))
+    //         {
+    //             yield return i;
+    //         }
+    //     }
+    // }
+
+
+    public static IEnumerable<T> Where<T>(this IEnumerable<T> items, Func<T, bool> gauntlet)
     {
         Console.WriteLine("My Where extension");
-        foreach (int i in ints)
+        foreach(T item in items)
         {
-            if (gauntlet(i))
+            if (gauntlet(item))
             {
-                yield return i;
+                yield return item;
             }
         }
     }
 
-
-    public static IEnumerable<T> Where<T>(this IEnumerable<T> items, FunctionPointerAttributes<T, bool> gauntlet)
-    {
-        foreach(T item in items)
-        {
-            yield return item;
-        }
-    }
-
-    public static IEnumerable<Random> Select<T,R>(this IEnumerable<T> items, Func<T, R> transform){
+    public static IEnumerable<R> Select<T,R>(this IEnumerable<T> items, Func<T, R> transform){
+        Console.WriteLine("My Select extension");
         foreach(T item in items)
         {
             yield return transform(item);
