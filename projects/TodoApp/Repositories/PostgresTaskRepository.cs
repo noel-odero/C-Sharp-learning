@@ -1,4 +1,5 @@
 using TodoApp.Models;
+using Npgsql;
 namespace TodoApp.Repositories;
 
 
@@ -13,7 +14,21 @@ public class PostgresTaskRepository : ITaskRepository
 
     public void Add(TodoItem task)
     {
-        throw new NotImplementedException();
+        using var conn = new NpgsqlConnection(_connectionString);
+        conn.Open();
+
+        const string sql = @"
+            INSERT INTO todos (title, is_completed, created_at, due_date, priority)
+            VALUES (@title, @isCompleted, @createdAt, @dueDate, @priority);";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("title", task.Title);
+        cmd.Parameters.AddWithValue("isCompleted", task.IsCompleted);
+        cmd.Parameters.AddWithValue("createdAt", task.CreatedAt);
+        cmd.Parameters.AddWithValue("dueDate", task.DueDate ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("priority", (short)task.Priority);
+
+        cmd.ExecuteNonQuery();
     }
 
     public void Delete(int id)
