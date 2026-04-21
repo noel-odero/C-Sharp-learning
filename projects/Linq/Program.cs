@@ -23,23 +23,43 @@ t.Name = "Main Thread";
 Console.WriteLine($"Thread name - {t.Name}");
 Console.WriteLine($"Current thread " + Thread.CurrentThread.Name);
 
+void Method1()
+{
+    for (int i = 1; i <= 5; i++)
+    {
+        Console.WriteLine($"Method1 -> {i}");
+        Thread.Sleep(200);
+    }
+}
+
+void Method2()
+{
+    for (int i = 1; i <= 5; i++)
+    {
+        Console.WriteLine($"Method2 -> {i}");
+        Thread.Sleep(200);
+    }
+}
+
+void Method3()
+{
+    for (int i = 1; i <= 5; i++)
+    {
+        Console.WriteLine($"Method3 -> {i}");
+        Thread.Sleep(200);
+    }
+}
+
+Thread t1 = new Thread(Method1);
+Thread t2 = new Thread(Method2);
+Thread t3 = new Thread(Method3);
+
+t1.Start();
+t2.Start();
+t3.Start();
+
 static class Wheres
 {
-    // public static IEnumerable<int> Where(this int[] ints, Func<int, bool> gauntlet)
-    // {
-    //     Console.WriteLine("My Where extension");
-    //     foreach (int i in ints)
-    //     {
-    //         if (gauntlet(i))
-    //         {
-    //             yield return i;
-    //         }
-    //     }
-    // }
-
-
-
-
     public static IEnumerable<T> Where<T>(this IEnumerable<T> items, Func<T, bool> gauntlet)
     {
         Console.WriteLine("My Where extension");
