@@ -18,6 +18,11 @@ foreach (int i in result)
     Console.WriteLine(i);
 }
 
+Thread t = Thread.CurrentThread;
+t.Name = "Main Thread";
+Console.WriteLine($"Thread name - {t.Name}");
+Console.WriteLine($"Current thread " + Thread.CurrentThread.Name);
+
 static class Wheres
 {
     // public static IEnumerable<int> Where(this int[] ints, Func<int, bool> gauntlet)
@@ -31,6 +36,8 @@ static class Wheres
     //         }
     //     }
     // }
+
+
 
 
     public static IEnumerable<T> Where<T>(this IEnumerable<T> items, Func<T, bool> gauntlet)
