@@ -30,6 +30,7 @@ void Method1()
         Console.WriteLine($"Method1 -> {i}");
         Thread.Sleep(200);
     }
+    Console.WriteLine("Method1 completed");
 }
 
 void Method2()
@@ -39,6 +40,7 @@ void Method2()
         Console.WriteLine($"Method2 -> {i}");
         Thread.Sleep(200);
     }
+    Console.WriteLine("Method2 completed");
 }
 
 void Method3()
@@ -48,6 +50,7 @@ void Method3()
         Console.WriteLine($"Method3 -> {i}");
         Thread.Sleep(200);
     }
+    Console.WriteLine("Method3 completed");
 }
 
 Thread t1 = new Thread(Method1);
