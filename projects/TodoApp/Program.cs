@@ -5,8 +5,10 @@ using TodoApp.Services;
 class Program
 {
     static void Main()
+
     {
-        var repository = new InMemoryTaskRepository();
+        string connectionString = "Host=localhost;Port=5432;Username=postgres;Password=yourpassword;Database=todo_app";
+        var repository = new PostgresTaskRepository(connectionString);
         var manager = new TaskManager(repository);
 
         Console.WriteLine("=== TODO CLI APP ===");
