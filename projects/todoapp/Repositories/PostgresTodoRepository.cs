@@ -101,17 +101,25 @@ namespace TodoApp.Repositories
 
         private static TodoItem MapRow(NpgsqlDataReader reader)
         {
-            var priority = Enum.Parse<Priority>(reader.GetString("priority"));
-            var dueDate = reader.IsDBNull("due_date") ? (DateTime?)null : reader.GetDateTime("due_date");
+            var idOrdinal = reader.GetOrdinal("id");
+            var titleOrdinal = reader.GetOrdinal("title");
+            var descriptionOrdinal = reader.GetOrdinal("description");
+            var isCompletedOrdinal = reader.GetOrdinal("is_completed");
+            var priorityOrdinal = reader.GetOrdinal("priority");
+            var createdAtOrdinal = reader.GetOrdinal("created_at");
+            var dueDateOrdinal = reader.GetOrdinal("due_date");
+
+            var priority = Enum.Parse<Priority>(reader.GetString(priorityOrdinal));
+            var dueDate = reader.IsDBNull(dueDateOrdinal) ? (DateTime?)null : reader.GetDateTime(dueDateOrdinal);
 
             return TodoItem.Reconstitute(
-                id:          reader.GetGuid("id"),
-                title:       reader.GetString("title"),
-                description: reader.IsDBNull("description") ? null : reader.GetString("description"),
-                isCompleted: reader.GetBoolean("is_completed"),
-                priority:    priority,
-                createdAt:   reader.GetDateTime("created_at"),
-                dueDate:     dueDate
+                id: reader.GetGuid(idOrdinal),
+                title: reader.GetString(titleOrdinal),
+                description: reader.IsDBNull(descriptionOrdinal) ? null : reader.GetString(descriptionOrdinal),
+                isCompleted: reader.GetBoolean(isCompletedOrdinal),
+                priority: priority,
+                createdAt: reader.GetDateTime(createdAtOrdinal),
+                dueDate: dueDate
             );
         }
 

@@ -9,7 +9,7 @@ try
 
 
     Env.Load();
-    var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false).AddEnvironmentVariables().Build();
+    var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true).AddEnvironmentVariables().Build();
 
     var host     = config["DATABASE_HOST"]     ?? config["Database:Host"];
     var port     = config["DATABASE_PORT"]     ?? config["Database:Port"];
@@ -17,7 +17,10 @@ try
     var username = config["DATABASE_USERNAME"] ?? config["Database:Username"];
     var password = config["DATABASE_PASSWORD"] ?? config["Database:Password"];
 
-    var connectionString = $"Host={host};Port={port};Database={name};Username={username};Password={password}";
+    var connectionString = string.IsNullOrEmpty(port) 
+        ? $"Host={host};Database={name};Username={username};Password={password}"
+        : $"Host={host};Port={port};Database={name};Username={username};Password={password}";
+
     var repository = new PostgresTodoRepository(connectionString);
     var service = new TodoService(repository);
     var ui = new ConsoleUI(service);
