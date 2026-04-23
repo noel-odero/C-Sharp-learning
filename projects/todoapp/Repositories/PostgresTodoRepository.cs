@@ -1,6 +1,24 @@
 using Npgsql;
 using TodoApp.Models;
 
+// NpgsqlConnection - Rep the physical connection to pg database. Think of it like a phone call — you dial (open), talk (send queries), and hang up (close/dispose).
+// NpgsqlCommand - rep SQL statement you wanna run. Holds the query tect, the connection to run it on and any parameters bound to it
+/*
+    It has three execustion methods depending on what your query returns
+        ExecuteNonQuery() - INSERT, UPDATE, DELETE
+        ExecuteReader() - SELECT 
+        ExecuteScala - for queries returning single values like SELECT COUNT(*) FROM todos
+*/
+// NpgsqlDataReader - rep the result rows from select query. It's a cursor that starts before the first row and moves forward one row at a time with Read(). It's forward-only — you can't go back to a previous row. 
+
+/*
+    NpgsqlConnection  →  opens the door to Postgres
+        ↓
+    NpgsqlCommand     →  sends the SQL through that door
+        ↓
+    NpgsqlDataReader  →  reads whatever came back through the door
+*/
+
 namespace TodoApp.Repositories
 {
     public class PostgresTodoRepository : ITodoRepository
@@ -16,7 +34,7 @@ namespace TodoApp.Repositories
 
         public void Add(TodoItem item)
         {
-            using var conn = CreateConnection();
+            using var conn = CreateConnection(); // when method call finishes, using automatically calls conn.Dispose to close the connection.
             conn.Open();
 
             using var cmd = new NpgsqlCommand(
@@ -32,7 +50,7 @@ namespace TodoApp.Repositories
             cmd.Parameters.AddWithValue("createdAt", item.CreatedAt);
             cmd.Parameters.AddWithValue("dueDate", (object?)item.DueDate ?? DBNull.Value);
 
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery(); //sends SQL to postgres and executes it. NonQuery means we are not expecting rows back - just perfoming an action.
         }
 
         public IEnumerable<TodoItem> GetAll()
