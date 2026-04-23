@@ -25,6 +25,22 @@ namespace TodoApp.Models
             CreatedAt = DateTime.Now;
         }
 
+        private TodoItem(Guid id, string title, string? description, bool isCompleted, Priority priority, DateTime createdAt, DateTime? dueDate)
+        {
+            Id = id;
+            Title = title;
+            Description = description;
+            IsCompleted = isCompleted;
+            Priority = priority;
+            CreatedAt = createdAt;
+            DueDate = dueDate;
+        }
+        // Static factory method — the only way to reconstitute from the database
+        public static TodoItem Reconstitute(Guid id, string title, string? description, bool isCompleted, Priority priority, DateTime createdAt, DateTime? dueDate)
+        {
+            return new TodoItem(id, title, description, isCompleted, priority, createdAt, dueDate);
+        }
+
         public void Complete() => IsCompleted = true;
         public void Toggle() => IsCompleted = !IsCompleted;
 
