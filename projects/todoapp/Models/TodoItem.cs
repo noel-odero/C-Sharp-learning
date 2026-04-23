@@ -26,6 +26,7 @@ namespace TodoItem.Models
         }
 
         public void Complete() => IsCompleted = true;
+        public void Toggle() => IsCompleted = !IsCompleted;
 
         public void UpdateTitle(string newTitle)
         {
