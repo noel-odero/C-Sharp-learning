@@ -1,6 +1,8 @@
+using TodoApp.Models;
+
 namespace TodoApp.Repositories
 {
-    public interface ItodoRepository
+    public interface ITodoRepository
     {
         void Add(TodoItem item);
         IEnumerable<TodoItem> GetAll();
