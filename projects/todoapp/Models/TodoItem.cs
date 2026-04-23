@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace TodoApp.Models
 {
     public enum Priority{Low, Medium, High}
@@ -54,7 +56,7 @@ namespace TodoApp.Models
 
         public override string ToString()
         {
-            return $"[{(IsCompleted ? "✓" : " ")}] {Title} | {Priority} | Due: {DueDate?.ToString("yyyy-MM-dd") ?? "None"}";
+            return $"[{(IsCompleted ? "✓" : " ")}] {Title}  | {Priority} {(Description != null ? $"| {Description}": "")} 2| Due: {DueDate?.ToString("yyyy-MM-dd") ?? "None"}";
         }
     }
 }
