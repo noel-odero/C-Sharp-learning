@@ -1,9 +1,8 @@
-using System.Security.Cryptography.X509Certificates;
 using TodoApp.Models;
 
 namespace TodoApp.Repositories
 {
-    public class InMemoryRepository: ITodoRepository
+    public class InMemoryTodoRepository : ITodoRepository
     {
         private readonly Dictionary<Guid, TodoItem> _store = new();
 
