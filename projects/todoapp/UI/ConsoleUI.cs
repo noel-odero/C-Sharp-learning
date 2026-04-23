@@ -33,7 +33,7 @@ namespace TodoApp.UI
                         case "6": DeleteTodo(); break;
                         case "7": FilterTodos(); break;
                         case "0":
-                            Console.WriteLine("Goodbye!");
+                            Console.WriteLine("Looks like you've had enough of doing! Time to rest hun");
                             return;
                         default:
                             Console.WriteLine("Invalid option. Please enter a number from the menu.");
