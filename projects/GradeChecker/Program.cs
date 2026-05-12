@@ -1,5 +1,12 @@
 ﻿using GradeCheckerSystem;
 
-GradeChecker noel = new GradeChecker("Noel", 70);
 
-Console.WriteLine(noel.DisplayGrade());
+Console.Write("Enter your name: ");
+string name = Console.ReadLine();
+
+Console.Write("Enter your grade");
+int grade = Console.ReadLine();
+
+
+
+

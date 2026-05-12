@@ -32,29 +32,21 @@ namespace GradeCheckerSystem
 
         }
 
-        public string DisplayGrade()
+        public string GetGrade()
         {
-
-            switch (Grade)
+            return Grade switch
             {
-                case >= 90:
-                    Console.WriteLine($"{Name} scored {Grade} -> Grade A ");
-                    break;
-                case >= 80:
-                    Console.WriteLine($"{Name} scored {Grade} -> Grade B ");
-                    break;
-                case >= 70:
-                    Console.WriteLine($"{Name} scored {Grade} -> Grade C ");
-                    break;
-                case >= 60:
-                    Console.WriteLine($"{Name} scored {Grade} -> Grade D ");
-                    break;
-                default:
-                    Console.WriteLine($"{Name} scored {Grade} -> Grade E ");
-                    break;
-                
-            }
-            return $"{Name} scored {Grade} -> Grade F";
+                >= 90 => "A",
+                >= 80 => "B",
+                >= 70 => "C",
+                >= 60 => "D",
+                _ => "F",
+            };
+        }
+
+        public void DisplayResult()
+        {
+            Console.WriteLine($"{Name} scored {Grade} → Grade: {GetGrade()}");
         }
     }
 
