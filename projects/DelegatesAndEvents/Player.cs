@@ -3,6 +3,9 @@ namespace DelegatesAndEvents
     internal class Player
     {
         public int Points { get; private set;}
+        
+        public delegate void AchievementUnlockedHandler(int Points);
+        public event AchievementUnlockedHandler? AchievementUnlocked;
 
         public async Task AddPoints(int points)
         {
@@ -12,7 +15,7 @@ namespace DelegatesAndEvents
 
             if(Points >= 100)
             {
-                Console.WriteLine($"Congratulations! Achievement unlocked for earning points! ");
+                AchievementUnlocked?.Invoke(Points);
             }
         }
     }
