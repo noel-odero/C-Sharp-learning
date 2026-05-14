@@ -25,7 +25,7 @@ namespace EnventsAndDelegates
         {
             if(VideoEncoded != null)
             {
-                VideoEncoded.Invoke(this,new VideoEventArgs(){Video = video});
+                VideoEncoded?.Invoke(this,new VideoEventArgs(){Video = video});
             }
             
         }
