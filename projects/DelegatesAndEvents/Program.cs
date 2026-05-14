@@ -1,14 +1,7 @@
-﻿using DelegatesAndEvents;
+﻿using System.Reflection;
+using EnventsAndDelegates;
 
-Player player = new Player();
+var video = new Video("Video 1");
+var videoEncoder = new VideoEncoder();
 
-player.AchievementUnlocked += OnAchievementUnlocked;
-
-await player.AddPoints(30);
-await player.AddPoints(40);
-await player.AddPoints(35);
-
-static void OnAchievementUnlocked(int points)
-{
-    Console.WriteLine($"Congratulations from Program.cs! Achievement unlocked for earning {points} points! ");
-}
+videoEncoder.Encode(video);
