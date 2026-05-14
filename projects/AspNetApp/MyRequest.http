@@ -9,3 +9,7 @@ Content-Type: application/json
 {
     "id": 2, "name": "Buy watch", "dueDate": "2026-05-13", "isCompleted": false
 }
+
+###
+
+GET http://localhost:5055/todos/1
