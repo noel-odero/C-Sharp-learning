@@ -2,8 +2,8 @@ namespace EnventsAndDelegates
 {
     public class VideoEncoder
     {
-        // 1- Define a delegate
-        // 2 - define an event based in the delegate
+        // 1- Define a delegate - shape of the method in the subscriber
+        // 2 - define an event based on the delegate
         // 3- Raise the event / publish the event - to raise an event, we need a method responsible for it
 
         public delegate void VideoEncodedHandler(object source, EventArgs args);
@@ -17,7 +17,7 @@ namespace EnventsAndDelegates
             OnVideoEncoded();
         }
 
-        protected virtual void OnVideoEncoded()
+        protected virtual void OnVideoEncoded() // helper, checks if anyone is subscribed then fires the event
         {
             if(VideoEncoded != null)
             {
