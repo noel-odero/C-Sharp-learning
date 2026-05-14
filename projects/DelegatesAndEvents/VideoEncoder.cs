@@ -8,7 +8,7 @@ namespace EnventsAndDelegates
 
         public delegate void VideoEncodedHandler(object source, EventArgs args);
 
-        public event VideoEncoderHandler VideoEncoded;
+        public event VideoEncodedHandler VideoEncoded;
         public void Encode(Video video )
         {
             Console.WriteLine("Encoding video...");
