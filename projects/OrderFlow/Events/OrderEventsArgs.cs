@@ -1,3 +1,5 @@
+using OrderFlow.Models;
+
 namespace OrderFlow.Events;
 
 public class OrderEventArgs : EventArgs // signal that this class carries the event data

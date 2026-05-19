@@ -1,5 +1,6 @@
 // publisher contract
 using OrderFlow.Events;
+using OrderFlow.Models;
 
 namespace OrderFlow.Interfaces;
 

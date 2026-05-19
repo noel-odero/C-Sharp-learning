@@ -1,2 +1,129 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿// Program.cs
+using OrderFlow.Events;
+using OrderFlow.Interfaces;
+using OrderFlow.Models;
+using OrderFlow.Services;
+
+// --- Setup ---
+IOrderService orderService = new OrderService();
+EmailService emailService = new EmailService();
+InventoryService inventoryService = new InventoryService();
+ShippingService shippingService = new ShippingService();
+
+// --- Wire up subscribers ---
+orderService.OrderPlaced += async (source, args) => await emailService.OnOrderPlacedAsync(source, args);
+orderService.OrderPlaced += async (source, args) => await inventoryService.OnOrderPlacedAsync(source, args);
+orderService.OrderShipped += async (source, args) => await emailService.OnOrderShippedAsync(source, args);
+orderService.OrderShipped += async (source, args) => await shippingService.OnOrderShippedAsync(source, args);
+
+// --- Seed a customer ---
+var customer = new Customer(1, "Noel", "noel@alu.edu");
+int orderCounter = 1;
+
+// --- Menu ---
+await RunMenuAsync();
+
+async Task RunMenuAsync()
+{
+    while (true)
+    {
+        Console.WriteLine("\n=== OrderFlow ===");
+        Console.WriteLine("1. Place Order");
+        Console.WriteLine("2. Ship Order");
+        Console.WriteLine("3. View Orders");
+        Console.WriteLine("4. Exit");
+        Console.Write("\nChoose an option: ");
+
+        var choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                await PlaceOrderAsync();
+                break;
+            case "2":
+                await ShipOrderAsync();
+                break;
+            case "3":
+                ViewOrders();
+                break;
+            case "4":
+                Console.WriteLine("\nGoodbye!");
+                return;
+            default:
+                Console.WriteLine("Invalid option, try again.");
+                break;
+        }
+    }
+}
+
+async Task PlaceOrderAsync()
+{
+    Console.Write("Product name: ");
+    var product = Console.ReadLine();
+
+    Console.Write("Quantity: ");
+    if (!int.TryParse(Console.ReadLine(), out int quantity))
+    {
+        Console.WriteLine("Invalid quantity.");
+        return;
+    }
+
+    Console.Write("Price: ");
+    if (!decimal.TryParse(Console.ReadLine(), out decimal price))
+    {
+        Console.WriteLine("Invalid price.");
+        return;
+    }
+
+    var order = new Order(orderCounter++, customer, product, quantity, price);
+
+    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+    await orderService.PlaceOrderAsync(order, cts.Token);
+}
+
+async Task ShipOrderAsync()
+{
+    ViewOrders();
+
+    Console.Write("\nEnter Order ID to ship: ");
+    if (!int.TryParse(Console.ReadLine(), out int orderId))
+    {
+        Console.WriteLine("Invalid ID.");
+        return;
+    }
+
+    var order = orderService.GetOrders().FirstOrDefault(o => o.Id == orderId);
+
+    if (order == null)
+    {
+        Console.WriteLine("Order not found.");
+        return;
+    }
+
+    if (order.Status != OrderStatus.Confirmed)
+    {
+        Console.WriteLine($"Order #{orderId} cannot be shipped — current status is {order.Status}.");
+        return;
+    }
+
+    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+    await orderService.ShipOrderAsync(order, cts.Token);
+}
+
+void ViewOrders()
+{
+    var orders = orderService.GetOrders();
+
+    if (orders.Count == 0)
+    {
+        Console.WriteLine("\nNo orders yet.");
+        return;
+    }
+
+    Console.WriteLine("\n--- Orders ---");
+    foreach (var order in orders)
+    {
+        Console.WriteLine(order);
+    }
+}

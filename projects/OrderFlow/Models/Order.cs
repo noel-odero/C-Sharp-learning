@@ -1,4 +1,4 @@
-namespace OrderFlow.Model;
+namespace OrderFlow.Models;
 
 public enum OrderStatus
 {
@@ -8,7 +8,7 @@ public enum OrderStatus
     Delivered
 }
 
-public class OrderFlow
+public class Order
 {
     public int Id{get; set;}
     public Customer Customer{get; set;}
@@ -18,7 +18,7 @@ public class OrderFlow
     public OrderStatus Status{get; set;}
     public DateTimeOffset CreatedAt{get; set;}
 
-    public OrderFlow(int id, Customer customer, string product, int quantity, decimal price, OrderStatus status)
+    public Order(int id, Customer customer, string product, int quantity, decimal price, OrderStatus status)
     {
         Id = id;
         Customer = customer;

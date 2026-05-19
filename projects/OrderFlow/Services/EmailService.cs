@@ -3,7 +3,7 @@ using OrderFlow.Interfaces;
 
 namespace OrderFlow.Services;
 
-public class EmailService : InotificationService
+public class EmailService : INotificationService
 {
     public async Task OnOrderPlacedAsync(object source, OrderEventArgs args)
     {
