@@ -10,7 +10,7 @@ POST http://localhost:5177/games
 Content-Type: application/json
 
 {
-    "name": "Noel",
+    "name": "",
     "genre": "Platformer",
     "price": 59.99,
     "releaseDate": "2023-10-20"

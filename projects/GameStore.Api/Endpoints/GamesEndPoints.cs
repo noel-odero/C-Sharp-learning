@@ -34,6 +34,7 @@ public static class GamesEndPoints
         // POST /games
         group.MapPost("/", (CreateGameDto newGame) =>
         {
+    
             GameDto game = new(
                 games.Count + 1,
                 newGame.Name,
