@@ -45,5 +45,45 @@ public class OrderService: IOrderService
 
 
     // Shipping an order
-    
+    public async Task ShipOrderAsync(Order order, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Console.WriteLine($"Shipping order of id {order.id}");
+            await Task.Delay(2000, cancellationToken);
+
+            order.Status = OrderStatus.Shipped;
+
+            OnOrderShipped(order);
+            
+        }
+        catch(OperationCanceledException)
+        {
+            Console.WriteLine("Oder shipment was cancelled");
+            
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"{ex.Message}");
+            
+        }
+    }
+
+    // all orders
+    public IReadOnlyList<Order> GetOrders()
+    {
+        return _orders.AsReadOnly();
+    }
+
+    // helpers - raise the events
+    protected virtual void OnOrderPlaced(Order order)
+    {
+        OrderPlaced?.Invoke(this, new OrderEventArgs(order, "Order places successfully"));
+    }
+
+    protected virtual void OnOrderShipped(Order order)
+    {
+        OrderShipped?.Invoke(this, new OrderEventArgs(order, "Order shipped successfully"));
+    }
 }
