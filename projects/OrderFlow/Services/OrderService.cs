@@ -19,4 +19,31 @@ public class OrderService: IOrderService
 
 
     // Placing an order
+    public async Task PlaceOrderAsync(Order order, CancellationToken cancellationToken=default)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Console.WriteLine($"\nProcessing order for {order.Customer.Name}...");
+            await Task.Delay(2000, cancellationToken);
+
+            order.Status  = OrderStatus.Confirmed;
+            _orders.Add(order);
+
+            OnOrderPlaced(order);
+        }
+        catch(OperationCanceledException)
+        {
+            Console.WriteLine("Order placement cancelled.");
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"{ex.Message}");
+        }
+    }
+
+
+    // Shipping an order
+    
 }
