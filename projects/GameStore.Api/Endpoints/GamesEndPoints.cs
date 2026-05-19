@@ -20,7 +20,7 @@ public static class GamesEndPoints
     {
 
         var group = app.MapGroup("/games");
-        group.MapGet("/games", () => games);
+        group.MapGet("/", () => games);
 
 
         // GET /games/Id
