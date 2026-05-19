@@ -18,19 +18,21 @@ public static class GamesEndPoints
 
     public static void MapGamesEndPoint(this WebApplication app)
     {
-        app.MapGet("/games", () => games);
+
+        var group = app.MapGroup("/games");
+        group.MapGet("/games", () => games);
 
 
         // GET /games/Id
 
-        app.MapGet("/games/{id}", (int id) =>
+        group.MapGet("/{id}", (int id) =>
         {
             var game = games.Find(game => game.Id == id);
             return game is null ? Results.NotFound() : Results.Ok();
         }).WithName(GetGameEndPointName);
 
         // POST /games
-        app.MapPost("/games", (CreateGameDto newGame) =>
+        group.MapPost("/", (CreateGameDto newGame) =>
         {
             GameDto game = new(
                 games.Count + 1,
@@ -45,7 +47,7 @@ public static class GamesEndPoints
         });
 
         // PUT /games/Id
-        app.MapPut("/games/{id}", (int id, UpdateNameDto updatedGame) =>
+        group.MapPut("/{id}", (int id, UpdateNameDto updatedGame) =>
         {
             
             var index = games.FindIndex(game => game.Id == id);
@@ -68,7 +70,7 @@ public static class GamesEndPoints
 
 
         // DELETE /games/id
-        app.MapDelete("/games/{id}", (int id) =>
+        group.MapDelete("/{id}", (int id) =>
         {
             games.RemoveAll(game => game.Id == id);
 
