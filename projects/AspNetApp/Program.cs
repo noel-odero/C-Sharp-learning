@@ -40,6 +40,14 @@ app.MapDelete("todos/{id}", (int id) =>
 });
 
 
+// PUT /games/Id
+app.MapPut("/games/{id}", (int id, UpdateNameDto updatedGame) =>
+
+    
+    
+});
+
+
 app.Run();
 
 public record Todo(int Id, string Name, DateTime DueDate, bool IsCompleted);

@@ -1,1 +1,32 @@
-GET http://localhost:5177
+GET http://localhost:5177/games
+
+
+###
+GET http://localhost:5177/games/1
+
+
+###
+POST http://localhost:5177/games
+Content-Type: application/json
+
+{
+    "name": "Noel",
+    "genre": "Platformer",
+    "price": 59.99,
+    "releaseDate": "2023-10-20"
+}
+
+
+###
+PUT http://localhost:5177/games/1
+Content-Type: application/json
+
+{
+    "name": "Noel",
+    "genre": "Platformer",
+    "price": 69.99,
+    "releaseDate": "2023-10-20"
+}
+
+###
+DELETE http://localhost:5177/games/1
