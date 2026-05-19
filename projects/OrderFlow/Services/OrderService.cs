@@ -11,8 +11,8 @@ public class OrderService: IOrderService
 {
     // public delegate void OrderPlacedHandler(object source, OrderEventArgs args);
     // public event OrderPlacedHandler OrderPlaced;
-    public event EventHandler<OrderEventArgs> OrderPlaced;
-    public event EventHandler<OrderEventArgs> OrderShipped;
+    public event EventHandler<OrderEventArgs>? OrderPlaced;
+    public event EventHandler<OrderEventArgs>? OrderShipped;
 
     // list pf orders
     private readonly List<Order> _orders = new List<Order>();
@@ -50,7 +50,7 @@ public class OrderService: IOrderService
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            Console.WriteLine($"Shipping order of id {order.id}");
+            Console.WriteLine($"Shipping order of id {order.Id}");
             await Task.Delay(2000, cancellationToken);
 
             order.Status = OrderStatus.Shipped;

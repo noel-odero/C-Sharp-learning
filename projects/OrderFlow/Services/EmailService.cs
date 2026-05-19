@@ -17,6 +17,6 @@ public class EmailService : INotificationService
         Console.WriteLine($"Sending shippinh notification");
         await Task.Delay(1000);
         Console.WriteLine($"Shipping email sent to {args.Order.Customer.Email}");
-        onsole.WriteLine($"Details {args.Order}");
+        Console.WriteLine($"Details {args.Order}");
     }
 }
