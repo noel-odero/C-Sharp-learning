@@ -71,24 +71,57 @@ Console.WriteLine($"Concurrent: {sw.ElapsedMilliseconds}ms");
 async Task<string> FetchUsersAsync()
 {
     await Task.Delay(1000);
+    return "Users: Noel, Alice, Bobo";
     
 }
 async Task<string> FetchOrdersAsync()
 {
     await Task.Delay(2000);
+    return "Orders: Jacket, Pants, Sweater";
     
 }
 async Task<string> FetchProductsAsync()
 {
     await Task.Delay(3000);
+    return "Products: Tea, Coffee";
     
 }
+
+Task<string> user = FetchUsersAsync();
+Task<string> order = FetchOrdersAsync();
+Task<string> products = FetchProductsAsync();
+
+string[] results = await Task.WhenAll(user, order, products);
+foreach(string result in results)
+{
+    Console.WriteLine(result);
+}
+Console.WriteLine(user.Result);
+
 
 // Question 5 — WhenAny for first response wins
 // Write two methods: FetchFromServer1Async and FetchFromServer2Async. 
 // Make one slower than the other. Use Task.WhenAny to take whichever 
 // responds first and print its result. What happens to the slower task — does it stop running?
 
+async Task<string> FetchFromServer1Async()
+{
+    await Task.Delay(1000);
+    return "Hey you";
+    
+}
+async Task<string> FetchFromServer2Async()
+{
+    await Task.Delay(2000);
+    return "Hello";
+    
+}
+
+Task<string> server1 = FetchFromServer1Async();
+Task<string> server2 = FetchFromServer2Async();
+
+Task<string> winner = await Task.WhenAny(server1, server2);
+Console.WriteLine(await winner);
 
 
 // Question 6 — Timeout pattern
