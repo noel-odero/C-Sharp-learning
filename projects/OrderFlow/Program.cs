@@ -10,11 +10,10 @@ INotificationService inventoryService = new InventoryService();
 INotificationService shippingService = new ShippingService();
 
 //  subcribe to the events
-orderService.OrderPlaced += async (source, args) => await emailService.OnOrderPlacedAsync(source, args);
-orderService.OrderShipped += async (source, args) => await emailService.OnOrderShippedAsync(source, args);
-orderService.OrderPlaced += async (source, args) => await inventoryService.OnOrderPlacedAsync(source, args);
-orderService.OrderShipped += async (source, args) => await shippingService.OnOrderShippedAsync(source, args);
-
+orderService.Subscribe("OrderPlaced", emailService.OnOrderPlacedAsync);
+orderService.Subscribe("OrderPlaced", inventoryService.OnOrderPlacedAsync);
+orderService.Subscribe("OrderShipped", emailService.OnOrderShippedAsync);
+orderService.Subscribe("OrderShipped", shippingService.OnOrderShippedAsync);
 //  customer 
 var customer = new Customer(1, "Noel", "noel@alu.edu");
 int orderCounter = 1;

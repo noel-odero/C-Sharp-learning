@@ -9,13 +9,24 @@ namespace OrderFlow.Services;
 public class OrderService: IOrderService
 
 {
-    // public delegate void OrderPlacedHandler(object source, OrderEventArgs args);
-    // public event OrderPlacedHandler OrderPlaced;
-    public event EventHandler<OrderEventArgs>? OrderPlaced;
-    public event EventHandler<OrderEventArgs>? OrderShipped;
 
+    private readonly List<Func<object, OrderEventArgs, Task>> _orderPlacedHandlers = new();
+    private readonly List<Func<object, OrderEventArgs, Task>> _orderShippedHandlers = new();
+
+
+    public void Subscribe(string eventName, Func<object, OrderEventArgs, Task> handler)
+    {
+        if (eventName == "OrderPlaced") _orderPlacedHandlers.Add(handler);
+        if (eventName == "OrderShipped") _orderShippedHandlers.Add(handler);
+    }
     // list pf orders
-    private readonly List<Order> _orders = new List<Order>();
+    private readonly List<Order> _orders = new();
+
+     // all orders
+    public IReadOnlyList<Order> GetOrders()
+    {
+        return _orders.AsReadOnly();
+    }
 
 
     // Placing an order
@@ -31,7 +42,7 @@ public class OrderService: IOrderService
             order.Status  = OrderStatus.Confirmed;
             _orders.Add(order);
 
-            OnOrderPlaced(order);
+            await OnOrderPlaced(order);
         }
         catch(OperationCanceledException)
         {
@@ -55,7 +66,7 @@ public class OrderService: IOrderService
 
             order.Status = OrderStatus.Shipped;
 
-            OnOrderShipped(order);
+            await OnOrderShipped(order);
             
         }
         catch(OperationCanceledException)
@@ -70,20 +81,18 @@ public class OrderService: IOrderService
         }
     }
 
-    // all orders
-    public IReadOnlyList<Order> GetOrders()
-    {
-        return _orders.AsReadOnly();
-    }
+   
 
     // helpers - raise the events
     protected virtual void OnOrderPlaced(Order order)
     {
-        OrderPlaced?.Invoke(this, new OrderEventArgs(order, "Order places successfully"));
+        var args = new OrderEventArgs(order, "Order places successfully");
+        await Task.WhenAll(_orderPlacedHandlers.Select(h=> h(this, args)));
     }
 
     protected virtual void OnOrderShipped(Order order)
     {
-        OrderShipped?.Invoke(this, new OrderEventArgs(order, "Order shipped successfully"));
+        var args = new OrderEventArgs(order, "Order shipped successfully");
+        await Task.WhenAll(_orderShippedHandlers.Select(h => h(this, args)));
     }
 }
