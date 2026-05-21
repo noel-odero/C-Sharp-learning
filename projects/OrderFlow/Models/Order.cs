@@ -25,7 +25,7 @@ public class Order
         Product = product;
         Quantity = quantity;
         Price = price;
-        Status = OrderStatus.Pending;
+        Status = status;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 

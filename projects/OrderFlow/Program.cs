@@ -74,7 +74,7 @@ async Task PlaceOrderAsync()
         return;
     }
 
-    var order = new Order(orderCounter++, customer, product, quantity, price, OrderStatus.Pending);
+    var order = new Order(orderCounter++, customer, product!, quantity, price, OrderStatus.Pending);
 
     using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
     await orderService.PlaceOrderAsync(order, cts.Token);

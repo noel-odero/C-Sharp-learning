@@ -84,13 +84,13 @@ public class OrderService: IOrderService
    
 
     // helpers - raise the events
-    protected virtual void OnOrderPlaced(Order order)
+    protected virtual async Task OnOrderPlaced(Order order)
     {
         var args = new OrderEventArgs(order, "Order places successfully");
         await Task.WhenAll(_orderPlacedHandlers.Select(h=> h(this, args)));
     }
 
-    protected virtual void OnOrderShipped(Order order)
+    protected virtual async Task OnOrderShipped(Order order)
     {
         var args = new OrderEventArgs(order, "Order shipped successfully");
         await Task.WhenAll(_orderShippedHandlers.Select(h => h(this, args)));
