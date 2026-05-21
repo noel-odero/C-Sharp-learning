@@ -8,7 +8,7 @@ public class ShippingService : INotificationService
     {
         public async Task OnOrderShippedAsync(object source, OrderEventArgs args)
         {
-            Console.WriteLine($"\n Creating shipment...");
+            Console.WriteLine($"\nCreating shipment...");
             await Task.Delay(1000);
             Console.WriteLine($"Shipment created for order {args.Order.Id}");
             Console.WriteLine($"Delivering to {args.Order.Customer.Name}");
