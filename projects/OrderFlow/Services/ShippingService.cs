@@ -14,9 +14,5 @@ namespace OrderFlow.Services
             Console.WriteLine($"Delivering to {args.Order.Customer.Name}");
         }
 
-        public async Task OnOrderPlacedAsync(object source, OrderEventArgs args)
-        {
-            await Task.CompletedTask;
-        }
     }
 }

@@ -13,8 +13,4 @@ public class InventoryService : INotificationService
 
     }
 
-    public async Task OnOrderShippedAsync(object source, OrderEventArgs args)
-    {
-       await Task.CompletedTask; 
-    }
 }
