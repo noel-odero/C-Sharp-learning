@@ -5,15 +5,10 @@ using OrderFlow.Models;
 namespace OrderFlow.Interfaces;
 
 public interface IOrderService
-{
-    // events
-    event EventHandler<OrderEventArgs> OrderPlaced;
-    event EventHandler<OrderEventArgs> OrderShipped;
-
-
-    // methods
+{ 
     Task PlaceOrderAsync(Order order, CancellationToken cancellationToken = default);
     Task ShipOrderAsync(Order order, CancellationToken cancellationToken = default);
     IReadOnlyList<Order> GetOrders();
+    void Subscribe(string eventName, Func<object, OrderEventArgs, Task> handler);
 
 }
