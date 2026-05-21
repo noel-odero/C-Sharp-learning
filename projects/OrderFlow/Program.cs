@@ -1,33 +1,32 @@
-﻿// Program.cs
-using OrderFlow.Events;
+﻿using OrderFlow.Events;
 using OrderFlow.Interfaces;
 using OrderFlow.Models;
 using OrderFlow.Services;
 
-// --- Setup ---
+// code against contract for loose coupling
 IOrderService orderService = new OrderService();
-EmailService emailService = new EmailService();
-InventoryService inventoryService = new InventoryService();
-ShippingService shippingService = new ShippingService();
+INotificationService emailService = new EmailService();
+INotificationService inventoryService = new InventoryService();
+INotificationService shippingService = new ShippingService();
 
-// --- Wire up subscribers ---
+//  subcribe to the events
 orderService.OrderPlaced += async (source, args) => await emailService.OnOrderPlacedAsync(source, args);
-orderService.OrderPlaced += async (source, args) => await inventoryService.OnOrderPlacedAsync(source, args);
 orderService.OrderShipped += async (source, args) => await emailService.OnOrderShippedAsync(source, args);
+orderService.OrderPlaced += async (source, args) => await inventoryService.OnOrderPlacedAsync(source, args);
 orderService.OrderShipped += async (source, args) => await shippingService.OnOrderShippedAsync(source, args);
 
-// --- Seed a customer ---
+//  customer 
 var customer = new Customer(1, "Noel", "noel@alu.edu");
 int orderCounter = 1;
 
-// --- Menu ---
+//  Menu
 await RunMenuAsync();
 
 async Task RunMenuAsync()
 {
     while (true)
     {
-        Console.WriteLine("\n=== OrderFlow ===");
+        Console.WriteLine("\n ---OrderFlow ---");
         Console.WriteLine("1. Place Order");
         Console.WriteLine("2. Ship Order");
         Console.WriteLine("3. View Orders");
@@ -65,14 +64,14 @@ async Task PlaceOrderAsync()
     Console.Write("Quantity: ");
     if (!int.TryParse(Console.ReadLine(), out int quantity))
     {
-        Console.WriteLine("Invalid quantity.");
+        Console.WriteLine("Invalid quantity. Enter a number");
         return;
     }
 
     Console.Write("Price: ");
     if (!decimal.TryParse(Console.ReadLine(), out decimal price))
     {
-        Console.WriteLine("Invalid price.");
+        Console.WriteLine("Invalid price. Enter a valid price");
         return;
     }
 
