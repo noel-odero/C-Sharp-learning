@@ -2,9 +2,9 @@
 using OrderFlow.Events;
 using OrderFlow.Interfaces;
 
-namespace OrderFlow.Services
-{
-    public class ShippingService : INotificationService
+namespace OrderFlow.Services;
+
+public class ShippingService : INotificationService
     {
         public async Task OnOrderShippedAsync(object source, OrderEventArgs args)
         {
@@ -15,4 +15,3 @@ namespace OrderFlow.Services
         }
 
     }
-}
