@@ -12,8 +12,6 @@ public class OrderService: IOrderService
 
     private readonly List<Func<object, OrderEventArgs, Task>> _orderPlacedHandlers = new();
     private readonly List<Func<object, OrderEventArgs, Task>> _orderShippedHandlers = new();
-
-
     public void Subscribe(string eventName, Func<object, OrderEventArgs, Task> handler)
     {
         if (eventName == "OrderPlaced") _orderPlacedHandlers.Add(handler);

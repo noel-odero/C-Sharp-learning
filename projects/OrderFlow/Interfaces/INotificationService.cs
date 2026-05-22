@@ -9,3 +9,6 @@ public interface INotificationService
     Task OnOrderPlacedAsync(object source, OrderEventArgs args) => Task.CompletedTask;
     Task OnOrderShippedAsync(object source, OrderEventArgs args) => Task.CompletedTask;
 }
+
+// two Interfaces
+// unsubscribe method
