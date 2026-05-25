@@ -81,7 +81,7 @@ public class OrderService: IOrderService
 
    
 
-    // helpers - raise the events
+    // helpers - raise the events - loop though the subscribers and start them in parallel.
     protected virtual async Task OnOrderPlaced(Order order)
     {
         var args = new OrderEventArgs(order, "Order places successfully");

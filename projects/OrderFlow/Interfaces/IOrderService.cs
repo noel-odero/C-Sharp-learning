@@ -9,6 +9,6 @@ public interface IOrderService
     Task PlaceOrderAsync(Order order, CancellationToken cancellationToken = default);
     Task ShipOrderAsync(Order order, CancellationToken cancellationToken = default);
     IReadOnlyList<Order> GetOrders();
-    void Subscribe(string eventName, Func<object, OrderEventArgs, Task> handler);
+    void Subscribe(string eventName, Func<object, OrderEventArgs, Task> handler); 
 
 }
