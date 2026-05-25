@@ -1,6 +1,37 @@
-@LibraryAPI_HostAddress = http://localhost:5131
-
-GET {{LibraryAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+### Get all books
+GET http://localhost:5131/books
 
 ###
+
+### Get a single book
+GET http://localhost:5131/books/1
+
+###
+
+### Add a new book
+POST http://localhost:5131/books
+Content-Type: application/json
+
+{
+    "title": "Americanah",
+    "author": "Chimamanda Ngozi Adichie",
+    "publishedYear": 2013,
+    "copiesAvailable": 4
+}
+
+###
+
+### Delete a book
+DELETE http://localhost:5131/books/1
+
+
+### Update a book
+PUT http://localhost:5131/books/1
+Content-Type: application/json
+
+{
+    "title": " Fall Apart",
+    "author": "Chinua Achebe",
+    "publishedYear": 1958,
+    "copiesAvailable": 10
+}
