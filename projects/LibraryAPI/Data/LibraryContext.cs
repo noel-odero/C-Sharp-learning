@@ -1,11 +1,11 @@
-using LibraryAPi.Models;
+using LibraryAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryAPI.Data;
 
-public class LibraryContext : DBContext
+public class LibraryContext : DbContext
 {
-    public LibraryContext(DBContextOptions<LibraryContext> options) : base(options)
+    public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
     {
         
     }
