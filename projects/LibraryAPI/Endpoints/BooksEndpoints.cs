@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LibraryAPI.Models;
 
 namespace LibraryAPI.Endpoints;
@@ -23,6 +24,10 @@ public static class BooksEndpoints
 
         app.MapPost("/books", (Book book) =>
         {
+            if (!IsValid(book, out var errors))
+            {
+                return Results.BadRequest(errors);
+            }
             Book newBook = new Book
             {
                 Id = books.Max(b => b.Id) + 1,
@@ -37,6 +42,10 @@ public static class BooksEndpoints
 
         app.MapPut("/books/{id}", (int id, Book updatedBook) =>
         {
+            if (!IsValid(updatedBook, out var errors))
+            {
+                return Results.BadRequest(errors);
+            }
             var bookIndex = books.FindIndex(book => book.Id == id);
             if (bookIndex == -1)
             {
@@ -63,5 +72,21 @@ public static class BooksEndpoints
             books.Remove(book);
             return Results.NoContent();
         });
+    }
+
+    private static bool IsValid(object obj, out List<string> errors)
+    {
+        var context = new ValidationContext(obj);
+        var results = new List<ValidationResult>();
+        errors = new List<string>();
+
+        bool isValid = Validator.TryValidateObject(obj, context, results, true);
+
+        if(!isValid)
+        {
+            errors = results.Select(r => r.ErrorMessage ?? "Invalid field").ToList();
+        }
+
+        return isValid;
     }
 }

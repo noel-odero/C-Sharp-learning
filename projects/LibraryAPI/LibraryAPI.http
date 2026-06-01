@@ -13,13 +13,24 @@ POST http://localhost:5131/books
 Content-Type: application/json
 
 {
-    "title": "Americanah",
+    "title": "",
     "author": "Chimamanda Ngozi Adichie",
     "publishedYear": 2013,
     "copiesAvailable": 4
 }
 
 ###
+
+### Test validation
+POST http://localhost:5131/books
+Content-Type: application/json
+
+{
+    "title": "Test Book",
+    "author": "Test Author",
+    "publishedYear": -500,
+    "copiesAvailable": -10
+}
 
 ### Delete a book
 DELETE http://localhost:5131/books/1
