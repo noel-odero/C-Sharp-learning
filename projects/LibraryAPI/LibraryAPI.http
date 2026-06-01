@@ -13,7 +13,7 @@ POST http://localhost:5131/books
 Content-Type: application/json
 
 {
-    "title": "",
+    "title": "Things Fall",
     "author": "Chimamanda Ngozi Adichie",
     "publishedYear": 2013,
     "copiesAvailable": 4

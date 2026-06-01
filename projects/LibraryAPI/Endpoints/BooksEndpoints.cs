@@ -1,20 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 using LibraryAPI.Models;
+using LibraryAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryAPI.Endpoints;
 
 public static class BooksEndpoints
 {
-    public static void MapBooksEndpoints(this WebApplication app, List<Book> books)
+    public static void MapBooksEndpoints(this WebApplication app)
     {
-        app.MapGet("/books", () =>
+        app.MapGet("/books", (LibraryContext context) =>
         {
+            var books = context.Books.ToList();
             return Results.Ok(books);
         });
 
-        app.MapGet("/books/{id}", (int id) =>
+        app.MapGet("/books/{id}", (int id, LibraryContext context) =>
         {
-            var book = books.Find(book => book.Id == id);
+            var book = context.Books.Find(id);
             if (book is null)
             {
                 return Results.NotFound($"Book with ID {id} was not found");
@@ -22,54 +25,45 @@ public static class BooksEndpoints
             return Results.Ok(book);
         });
 
-        app.MapPost("/books", (Book book) =>
+        app.MapPost("/books", (Book book, LibraryContext context) =>
         {
             if (!IsValid(book, out var errors))
             {
                 return Results.BadRequest(errors);
             }
-            Book newBook = new Book
-            {
-                Id = books.Max(b => b.Id) + 1,
-                Title = book.Title,
-                Author = book.Author,
-                PublishedYear = book.PublishedYear,
-                CopiesAvailable = book.CopiesAvailable
-            };
-            books.Add(newBook);
-            return Results.Created($"/books/{newBook.Id}", newBook);
+            context.Books.Add(book);
+            context.SaveChanges();
+            return Results.Created($"/books/{book.Id}", book);
         });
 
-        app.MapPut("/books/{id}", (int id, Book updatedBook) =>
+        app.MapPut("/books/{id}", (int id, Book updatedBook, LibraryContext context) =>
         {
             if (!IsValid(updatedBook, out var errors))
             {
                 return Results.BadRequest(errors);
             }
-            var bookIndex = books.FindIndex(book => book.Id == id);
-            if (bookIndex == -1)
+            var book = context.Books.Find(id); 
+            if (book is null)
             {
                 return Results.NotFound($"Book with id {id} not found");
             }
-            books[bookIndex] = new Book
-            {
-                Id = id,
-                Title = updatedBook.Title,
-                Author = updatedBook.Author,
-                PublishedYear = updatedBook.PublishedYear,
-                CopiesAvailable = updatedBook.CopiesAvailable
-            };
+            book.Title = updatedBook.Title;
+            book.Author = updatedBook.Author;
+            book.PublishedYear = updatedBook.PublishedYear;
+            book.CopiesAvailable = updatedBook.CopiesAvailable;
+            context.SaveChanges();
             return Results.NoContent();
         });
 
-        app.MapDelete("/books/{id}", (int id) =>
+        app.MapDelete("/books/{id}", (int id, LibraryContext context) =>
         {
-            var book = books.Find(book => book.Id == id);
+            var book = context.Books.Find(id);
             if (book is null)
             {
                 return Results.NotFound($"Book with ID {id} was not found");
             }
-            books.Remove(book);
+            context.Books.Remove(book);
+            context.SaveChanges();
             return Results.NoContent();
         });
     }
