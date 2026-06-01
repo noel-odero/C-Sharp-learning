@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using LibraryAPI.Models;
 using LibraryAPI.Data;
-using Microsoft.EntityFrameworkCore;
+using LibraryAPI.DTOs;
+using LibraryAPI.Models;
 
 namespace LibraryAPI.Endpoints;
 
@@ -11,7 +11,17 @@ public static class BooksEndpoints
     {
         app.MapGet("/books", (LibraryContext context) =>
         {
-            var books = context.Books.ToList();
+            var books = context.Books
+                .Select(b => new BookDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    PublishedYear = b.PublishedYear,
+                    CopiesAvailable = b.CopiesAvailable
+                })
+                .ToList();
+
             return Results.Ok(books);
         });
 
@@ -22,35 +32,68 @@ public static class BooksEndpoints
             {
                 return Results.NotFound($"Book with ID {id} was not found");
             }
-            return Results.Ok(book);
+
+            var bookDto = new BookDto
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                PublishedYear = book.PublishedYear,
+                CopiesAvailable = book.CopiesAvailable
+            };
+
+            return Results.Ok(bookDto);
         });
 
-        app.MapPost("/books", (Book book, LibraryContext context) =>
+        app.MapPost("/books", (CreateBookDto dto, LibraryContext context) =>
         {
-            if (!IsValid(book, out var errors))
+            if (!IsValid(dto, out var errors))
             {
                 return Results.BadRequest(errors);
             }
+
+            var book = new Book
+            {
+                Title = dto.Title,
+                Author = dto.Author,
+                PublishedYear = dto.PublishedYear,
+                CopiesAvailable = dto.CopiesAvailable
+            };
+
             context.Books.Add(book);
             context.SaveChanges();
-            return Results.Created($"/books/{book.Id}", book);
+
+            var bookDto = new BookDto
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                PublishedYear = book.PublishedYear,
+                CopiesAvailable = book.CopiesAvailable
+            };
+
+            return Results.Created($"/books/{book.Id}", bookDto);
         });
 
-        app.MapPut("/books/{id}", (int id, Book updatedBook, LibraryContext context) =>
+        app.MapPut("/books/{id}", (int id, UpdateBookDto dto, LibraryContext context) =>
         {
-            if (!IsValid(updatedBook, out var errors))
+            if (!IsValid(dto, out var errors))
             {
                 return Results.BadRequest(errors);
             }
-            var book = context.Books.Find(id); 
+
+            var book = context.Books.Find(id);
             if (book is null)
             {
                 return Results.NotFound($"Book with id {id} not found");
             }
-            book.Title = updatedBook.Title;
-            book.Author = updatedBook.Author;
-            book.PublishedYear = updatedBook.PublishedYear;
-            book.CopiesAvailable = updatedBook.CopiesAvailable;
+
+            // Only update fields that were sent
+            if (dto.Title is not null) book.Title = dto.Title;
+            if (dto.Author is not null) book.Author = dto.Author;
+            if (dto.PublishedYear is not null) book.PublishedYear = dto.PublishedYear.Value;
+            if (dto.CopiesAvailable is not null) book.CopiesAvailable = dto.CopiesAvailable.Value;
+
             context.SaveChanges();
             return Results.NoContent();
         });
@@ -76,7 +119,7 @@ public static class BooksEndpoints
 
         bool isValid = Validator.TryValidateObject(obj, context, results, true);
 
-        if(!isValid)
+        if (!isValid)
         {
             errors = results.Select(r => r.ErrorMessage ?? "Invalid field").ToList();
         }

@@ -1,20 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace LibraryAPI.DTOs;
 
-public class CreateBookDto
+public class BookDto
 {
-    [Required]
-    [StringLength(200, MinimumLength = 1)]
+    public int Id { get; set; }
+
     public string Title { get; set; } = string.Empty;
 
-    [Required]
-    [StringLength(100, MinimumLength = 1)]
+    
     public string Author { get; set; } = string.Empty;
 
-    [Range(1, 2026)]
     public int PublishedYear { get; set; }
 
-    [Range(0, 1000)]
     public int CopiesAvailable { get; set; }
 }
