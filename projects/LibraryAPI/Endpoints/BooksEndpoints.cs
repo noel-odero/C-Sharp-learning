@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using LibraryAPI.Data;
 using LibraryAPI.DTOs;
 using LibraryAPI.Models;
@@ -12,11 +13,14 @@ public static class BooksEndpoints
         app.MapGet("/books", (LibraryContext context) =>
         {
             var books = context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
                 .Select(b => new BookDto
                 {
                     Id = b.Id,
                     Title = b.Title,
-                    Author = b.Author,
+                    AuthorName = b.Author != null ? b.Author.Name : "Unknown",
+                    GenreName = b.Genre != null ? b.Genre.Name : "Unknown",
                     PublishedYear = b.PublishedYear,
                     CopiesAvailable = b.CopiesAvailable
                 })
@@ -27,17 +31,20 @@ public static class BooksEndpoints
 
         app.MapGet("/books/{id}", (int id, LibraryContext context) =>
         {
-            var book = context.Books.Find(id);
+            var book = context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
+                .FirstOrDefault(b => b.Id == id);
+
             if (book is null)
-            {
                 return Results.NotFound($"Book with ID {id} was not found");
-            }
 
             var bookDto = new BookDto
             {
                 Id = book.Id,
                 Title = book.Title,
-                Author = book.Author,
+                AuthorName = book.Author != null ? book.Author.Name : "Unknown",
+                GenreName = book.Genre != null ? book.Genre.Name : "Unknown",
                 PublishedYear = book.PublishedYear,
                 CopiesAvailable = book.CopiesAvailable
             };
@@ -48,14 +55,13 @@ public static class BooksEndpoints
         app.MapPost("/books", (CreateBookDto dto, LibraryContext context) =>
         {
             if (!IsValid(dto, out var errors))
-            {
                 return Results.BadRequest(errors);
-            }
 
             var book = new Book
             {
                 Title = dto.Title,
-                Author = dto.Author,
+                AuthorId = dto.AuthorId,
+                GenreId = dto.GenreId,
                 PublishedYear = dto.PublishedYear,
                 CopiesAvailable = dto.CopiesAvailable
             };
@@ -63,13 +69,20 @@ public static class BooksEndpoints
             context.Books.Add(book);
             context.SaveChanges();
 
+            // Reload with relations
+            var createdBook = context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
+                .FirstOrDefault(b => b.Id == book.Id);
+
             var bookDto = new BookDto
             {
-                Id = book.Id,
-                Title = book.Title,
-                Author = book.Author,
-                PublishedYear = book.PublishedYear,
-                CopiesAvailable = book.CopiesAvailable
+                Id = createdBook!.Id,
+                Title = createdBook.Title,
+                AuthorName = createdBook.Author?.Name ?? "Unknown",
+                GenreName = createdBook.Genre?.Name ?? "Unknown",
+                PublishedYear = createdBook.PublishedYear,
+                CopiesAvailable = createdBook.CopiesAvailable
             };
 
             return Results.Created($"/books/{book.Id}", bookDto);
@@ -78,34 +91,18 @@ public static class BooksEndpoints
         app.MapPut("/books/{id}", (int id, UpdateBookDto dto, LibraryContext context) =>
         {
             if (!IsValid(dto, out var errors))
-            {
                 return Results.BadRequest(errors);
-            }
 
             var book = context.Books.Find(id);
             if (book is null)
-            {
                 return Results.NotFound($"Book with id {id} not found");
-            }
 
-            // Only update fields that were sent
             if (dto.Title is not null) book.Title = dto.Title;
-            if (dto.Author is not null) book.Author = dto.Author;
             if (dto.PublishedYear is not null) book.PublishedYear = dto.PublishedYear.Value;
             if (dto.CopiesAvailable is not null) book.CopiesAvailable = dto.CopiesAvailable.Value;
+            if (dto.AuthorId is not null) book.AuthorId = dto.AuthorId.Value;
+            if (dto.GenreId is not null) book.GenreId = dto.GenreId.Value;
 
-            context.SaveChanges();
-            return Results.NoContent();
-        });
-
-        app.MapDelete("/books/{id}", (int id, LibraryContext context) =>
-        {
-            var book = context.Books.Find(id);
-            if (book is null)
-            {
-                return Results.NotFound($"Book with ID {id} was not found");
-            }
-            context.Books.Remove(book);
             context.SaveChanges();
             return Results.NoContent();
         });

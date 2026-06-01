@@ -8,15 +8,16 @@ GET http://localhost:5131/books/1
 
 ###
 
-### Add a new book
+### Add a book
 POST http://localhost:5131/books
 Content-Type: application/json
 
 {
-    "title": "Things Fall",
-    "author": "Chimamanda Ngozi Adichie",
-    "publishedYear": 2013,
-    "copiesAvailable": 4
+    "title": "Things Fall Apart",
+    "authorId": 1,
+    "genreId": 1,
+    "publishedYear": 1958,
+    "copiesAvailable": 3
 }
 
 ###
