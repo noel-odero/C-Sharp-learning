@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
 using LibraryAPI.Data;
 using LibraryAPI.DTOs;
 using LibraryAPI.Models;
@@ -8,11 +9,12 @@ namespace LibraryAPI.Endpoints;
 
 public static class BooksEndpoints
 {
-    public static void MapBooksEndpoints(this WebApplication app)
+    public static void MapBooksEndpoints(this RouteGroupBuilder group)
     {
-        app.MapGet("/books", (LibraryContext context) =>
+        group.MapGet("/", async (LibraryContext context) =>
         {
-            var books = context.Books
+            var books = await context.Books
+                .AsNoTracking()
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
                 .Select(b => new BookDto
@@ -24,17 +26,18 @@ public static class BooksEndpoints
                     PublishedYear = b.PublishedYear,
                     CopiesAvailable = b.CopiesAvailable
                 })
-                .ToList();
+                .ToListAsync();
 
             return Results.Ok(books);
         });
 
-        app.MapGet("/books/{id}", (int id, LibraryContext context) =>
+        group.MapGet("/{id}", async (int id, LibraryContext context) =>
         {
-            var book = context.Books
+            var book = await context.Books
+                .AsNoTracking()
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
-                .FirstOrDefault(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id);
 
             if (book is null)
                 return Results.NotFound($"Book with ID {id} was not found");
@@ -52,7 +55,7 @@ public static class BooksEndpoints
             return Results.Ok(bookDto);
         });
 
-        app.MapPost("/books", (CreateBookDto dto, LibraryContext context) =>
+        group.MapPost("/", async (CreateBookDto dto, LibraryContext context) =>
         {
             if (!IsValid(dto, out var errors))
                 return Results.BadRequest(errors);
@@ -67,13 +70,13 @@ public static class BooksEndpoints
             };
 
             context.Books.Add(book);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             // Reload with relations
-            var createdBook = context.Books
+            var createdBook = await context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
-                .FirstOrDefault(b => b.Id == book.Id);
+                .FirstOrDefaultAsync(b => b.Id == book.Id);
 
             var bookDto = new BookDto
             {
@@ -88,12 +91,12 @@ public static class BooksEndpoints
             return Results.Created($"/books/{book.Id}", bookDto);
         });
 
-        app.MapPut("/books/{id}", (int id, UpdateBookDto dto, LibraryContext context) =>
+        group.MapPut("/{id}", async (int id, UpdateBookDto dto, LibraryContext context) =>
         {
             if (!IsValid(dto, out var errors))
                 return Results.BadRequest(errors);
 
-            var book = context.Books.Find(id);
+            var book = await context.Books.FindAsync(id);
             if (book is null)
                 return Results.NotFound($"Book with id {id} not found");
 
@@ -103,8 +106,18 @@ public static class BooksEndpoints
             if (dto.AuthorId is not null) book.AuthorId = dto.AuthorId.Value;
             if (dto.GenreId is not null) book.GenreId = dto.GenreId.Value;
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             return Results.NoContent();
+        });
+        group.MapDelete("/{id}", async (int id, LibraryContext context) =>
+        {
+            var book = await context.Books.FindAsync(id);
+            if(book is null) return Results.NotFound($"Book with ID {id} was not found");
+
+            context.Books.Remove(book);
+            await context.SaveChangesAsync();
+            return Results.NoContent();
+           
         });
     }
 
