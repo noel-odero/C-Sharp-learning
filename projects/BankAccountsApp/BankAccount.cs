@@ -11,7 +11,7 @@ namespace BankAccountsApp
 
     public delegate void TransactionHandler(string message);
     // Primary constructor
-    public class BankAccount(string owner, decimal initialBalance = 0)
+    public class BankAccount(string owner, decimal initialBalance = 0, ITransactionLogger? logger = null)
     {
         public string? Owner { get; set; } = owner;
         public Guid AccountNumber { get; private set; } = Guid.NewGuid();
@@ -30,8 +30,14 @@ namespace BankAccountsApp
                 Console.WriteLine("Deposit amount must be positive");
                 return;
             }
+            if(logger != null && !logger.IsTransactionAllowed(amount))
+            {
+                Console.WriteLine("Transaction is not allowed");
+                return;
+            }
 
             Balance += amount;
+            logger?.Log($"Depoited {amount:C}, New balance: {Balance:C}");
             OnDeposit?.Invoke($"Deposited {amount:C}. New balance: {Balance:C}");
         }
         
