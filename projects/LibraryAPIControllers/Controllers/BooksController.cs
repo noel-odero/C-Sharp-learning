@@ -16,6 +16,9 @@ public class BooksController : ControllerBase
         _context = context;
     }
 
+
+    // ActionResult<Book>   "I return HTTP responses, and when successful the body is a Book"
+    // IActionResult        "I return HTTP responses, body shape unspecified"
     // GET api/books
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
