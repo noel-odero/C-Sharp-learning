@@ -1,4 +1,6 @@
-﻿namespace BankAccountsApp.Tests;
+﻿using System.Reflection.Metadata;
+
+namespace BankAccountsApp.Tests;
 
 public class BankAccountTests
 {
@@ -28,32 +30,49 @@ public class BankAccountTests
         Assert.Equal(200m, account.Balance);
     }
 
-    [Fact]
-    public void Deposit_NegativeAmount_DoesNotChangeBalance()
+    // [Fact]
+    // public void Deposit_NegativeAmount_DoesNotChangeBalance()
+    // {
+    //     // Given
+    //     var account = new BankAccount("Alice", 500m);
+    
+    //     // When
+    //     account.Deposit(-100);
+    
+    //     // Then
+    //     Assert.Equal(500m, account.Balance);
+    // }
+
+    // [Fact]
+    // public void Deposit_ZeroAmount_DoesNotChangeBalance()
+    // {
+    //     // Given
+    //     var account = new BankAccount("Alice", 500m);
+    
+    //     // When
+    //     account.Deposit(0);
+    
+    //     // Then
+    //     Assert.Equal(500m, account.Balance);
+    // }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-999)]
+    public void Deposit_InvalidAmount_DoesNotChangeBalance(decimal amount)
     {
         // Given
         var account = new BankAccount("Alice", 500m);
     
         // When
-        account.Deposit(-100);
+        account.Deposit(amount);
     
         // Then
         Assert.Equal(500m, account.Balance);
     }
 
-    [Fact]
-    public void Deposit_ZeroAmount_DoesNotChangeBalance()
-    {
-        // Given
-        var account = new BankAccount("Alice", 500m);
     
-        // When
-        account.Deposit(0);
-    
-        // Then
-        Assert.Equal(500m, account.Balance);
-    }
-
     [Fact]
     public void Withdraw_DecreasesBalance()
     {
@@ -87,6 +106,35 @@ public class BankAccountTests
         var account = new BankAccount("Alice", 100m);
         account.Withdraw(-50m);
         Assert.Equal(100m, account.Balance);
+    }
+
+    [Fact]
+    public void Deposit_FiresOnDepositEvent()
+    {
+        // Given
+        var account = new BankAccount("Alice");
+        string? capturedMessage = null;
+        account.OnDeposit += msg => capturedMessage = msg;
+    
+        // When
+        account.Deposit(100m);
+    
+        // Then
+        Assert.NotNull(capturedMessage);
+        Assert.Contains("100", capturedMessage);
+    }
+
+
+    [Fact]
+    public void Deposit_InvalidAmount_DoesNotFireEvent()
+    {
+        var account = new BankAccount("Alice");
+        bool eventFired = false;
+        account.OnDeposit += _ => eventFired = true;
+
+        account.Deposit(-50m);
+
+        Assert.False(eventFired);
     }
 
 }
