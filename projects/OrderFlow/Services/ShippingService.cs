@@ -4,7 +4,7 @@ using OrderFlow.Interfaces;
 
 namespace OrderFlow.Services;
 
-public class ShippingService : INotificationService
+public class ShippingService : IOrderShippedHandler
     {
         public async Task OnOrderShippedAsync(object source, OrderEventArgs args)
         {

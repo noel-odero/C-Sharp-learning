@@ -10,14 +10,14 @@ public class OrderService: IOrderService
 
 {
 
-    private readonly List<Func<object, OrderEventArgs, Task>> _orderPlacedHandlers = new();
-    private readonly List<Func<object, OrderEventArgs, Task>> _orderShippedHandlers = new();
-    public void Subscribe(string eventName, Func<object, OrderEventArgs, Task> handler)
-    {
-        if (eventName == "OrderPlaced") _orderPlacedHandlers.Add(handler);
-        if (eventName == "OrderShipped") _orderShippedHandlers.Add(handler);
-    }
-    // list pf orders
+    private readonly List<IOrderPlacedHandler> _orderPlacedHandlers = new();
+    private readonly List<IOrderShippedHandler> _orderShippedHandlers = new();
+
+    public void Subscribe(IOrderPlacedHandler handler) => _orderPlacedHandlers.Add(handler);
+    public void Subscribe(IOrderShippedHandler handler) => _orderShippedHandlers.Add(handler);
+    public void Unsubscribe(IOrderPlacedHandler handler) => _orderPlacedHandlers.Remove(handler);
+    public void Unsubscribe(IOrderShippedHandler handler) => _orderShippedHandlers.Remove(handler);
+    // list of  orders
     private readonly List<Order> _orders = new();
 
      // all orders
@@ -64,7 +64,7 @@ public class OrderService: IOrderService
 
             order.Status = OrderStatus.Shipped;
 
-            await OnOrderShipped(order);
+            await OnOrderShippedAsync(order);
             
         }
         catch(OperationCanceledException)
@@ -85,12 +85,12 @@ public class OrderService: IOrderService
     protected virtual async Task OnOrderPlaced(Order order)
     {
         var args = new OrderEventArgs(order, "Order places successfully");
-        await Task.WhenAll(_orderPlacedHandlers.Select(h=> h(this, args)));
+        await Task.WhenAll(_orderPlacedHandlers.Select(h => h.OnOrderPlacedAsync(this, args)));
     }
 
-    protected virtual async Task OnOrderShipped(Order order)
+    protected virtual async Task OnOrderShippedAsync(Order order)
     {
         var args = new OrderEventArgs(order, "Order shipped successfully");
-        await Task.WhenAll(_orderShippedHandlers.Select(h => h(this, args)));
+        await Task.WhenAll(_orderShippedHandlers.Select(h => h.OnOrderShippedAsync(this, args)));
     }
 }

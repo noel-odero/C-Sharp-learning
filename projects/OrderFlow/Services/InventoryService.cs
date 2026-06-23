@@ -3,7 +3,7 @@ using OrderFlow.Interfaces;
 
 namespace OrderFlow.Services;
 
-public class InventoryService : INotificationService
+public class InventoryService : IOrderPlacedHandler
 {
     public async Task OnOrderPlacedAsync(object source, OrderEventArgs args)
     {

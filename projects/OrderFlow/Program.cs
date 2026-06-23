@@ -5,15 +5,15 @@ using OrderFlow.Services;
 
 // code against contract for loose coupling
 IOrderService orderService = new OrderService();
-INotificationService emailService = new EmailService();
-INotificationService inventoryService = new InventoryService();
-INotificationService shippingService = new ShippingService();
+var emailService = new EmailService();
+var shippingService = new ShippingService();
+var inventoryService = new InventoryService();
 
 //  subcribe to the events
-orderService.Subscribe("OrderPlaced", emailService.OnOrderPlacedAsync);
-orderService.Subscribe("OrderPlaced", inventoryService.OnOrderPlacedAsync);
-orderService.Subscribe("OrderShipped", emailService.OnOrderShippedAsync);
-orderService.Subscribe("OrderShipped", shippingService.OnOrderShippedAsync);
+orderService.Subscribe((IOrderPlacedHandler)emailService);
+orderService.Subscribe((IOrderPlacedHandler)inventoryService);
+orderService.Subscribe((IOrderShippedHandler)emailService);
+orderService.Subscribe((IOrderShippedHandler)shippingService);
 //  customer 
 var customer = new Customer(1, "Noel", "noel@alu.edu");
 int orderCounter = 1;
