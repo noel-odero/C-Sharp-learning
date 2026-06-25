@@ -32,22 +32,22 @@ public class KafkaSetup : IDisposable
 
         Task.Run(() => emailPlaced.ConsumeAsync<OrderEventArgs>(
             "order-placed",
-            async (key, args) => await emailService.OnOrderPlacedAsync(null!, args),
+            async (key, args) => await emailService.OnOrderPlacedAsync(args),
             _cts.Token));
 
         Task.Run(() => inventory.ConsumeAsync<OrderEventArgs>(
             "order-placed",
-            async (key, args) => await inventoryService.OnOrderPlacedAsync(null!, args),
+            async (key, args) => await inventoryService.OnOrderPlacedAsync(args),
             _cts.Token));
 
         Task.Run(() => emailShipped.ConsumeAsync<OrderEventArgs>(
             "order-shipped",
-            async (key, args) => await emailService.OnOrderShippedAsync(null!, args),
+            async (key, args) => await emailService.OnOrderShippedAsync(args),
             _cts.Token));
 
         Task.Run(() => shipping.ConsumeAsync<OrderEventArgs>(
             "order-shipped",
-            async (key, args) => await shippingService.OnOrderShippedAsync(null!, args),
+            async (key, args) => await shippingService.OnOrderShippedAsync(args),
             _cts.Token));
 
         Console.WriteLine("[KafkaSetup] All consumers started.");

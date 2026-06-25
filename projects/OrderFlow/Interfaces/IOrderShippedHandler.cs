@@ -4,5 +4,5 @@ namespace OrderFlow.Interfaces;
 
 public interface IOrderShippedHandler
 {
-    Task OnOrderShippedAsync(object source, OrderEventArgs args);
+    Task OnOrderShippedAsync(OrderEventArgs args);
 }
