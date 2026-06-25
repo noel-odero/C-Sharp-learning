@@ -1,4 +1,3 @@
-// Kafka/KafkaProducer.cs
 using Confluent.Kafka;
 using System.Text.Json;
 

@@ -1,34 +1,35 @@
 // publisher
 using OrderFlow.Events;
 using OrderFlow.Interfaces;
+using OrderFlow.Kafka;
 using OrderFlow.Models;
-
 
 namespace OrderFlow.Services;
 
-public class OrderService: IOrderService
-
+public class OrderService : IOrderService
 {
+    private readonly KafkaProducer _producer;
+    private const string OrderPlacedTopic = "order-placed";
+    private const string OrderShippedTopic = "order-shipped";
 
     private readonly List<IOrderPlacedHandler> _orderPlacedHandlers = new();
     private readonly List<IOrderShippedHandler> _orderShippedHandlers = new();
+
+    public OrderService(KafkaProducer producer)
+    {
+        _producer = producer;
+    }
 
     public void Subscribe(IOrderPlacedHandler handler) => _orderPlacedHandlers.Add(handler);
     public void Subscribe(IOrderShippedHandler handler) => _orderShippedHandlers.Add(handler);
     public void Unsubscribe(IOrderPlacedHandler handler) => _orderPlacedHandlers.Remove(handler);
     public void Unsubscribe(IOrderShippedHandler handler) => _orderShippedHandlers.Remove(handler);
-    // list of  orders
+
     private readonly List<Order> _orders = new();
 
-     // all orders
-    public IReadOnlyList<Order> GetOrders()
-    {
-        return _orders.AsReadOnly();
-    }
+    public IReadOnlyList<Order> GetOrders() => _orders.AsReadOnly();
 
-
-    // Placing an order
-    public async Task PlaceOrderAsync(Order order, CancellationToken cancellationToken=default)
+    public async Task PlaceOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -37,54 +38,52 @@ public class OrderService: IOrderService
             Console.WriteLine($"\nProcessing order for {order.Customer.Name}...");
             await Task.Delay(2000, cancellationToken);
 
-            order.Status  = OrderStatus.Confirmed;
+            order.Status = OrderStatus.Confirmed;
             _orders.Add(order);
 
-            await OnOrderPlaced(order);
+            var args = new OrderEventArgs(order, "Order placed successfully");
+            await _producer.ProduceAsync(OrderPlacedTopic, order.Id.ToString(), args);
+
+            Console.WriteLine($"Order #{order.Id} published to {OrderPlacedTopic}");
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             Console.WriteLine("Order placement cancelled.");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine($"{ex.Message}");
         }
     }
 
-
-    // Shipping an order
     public async Task ShipOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            Console.WriteLine($"Shipping order of id {order.Id}");
+
+            Console.WriteLine($"\nShipping order #{order.Id}...");
             await Task.Delay(2000, cancellationToken);
 
             order.Status = OrderStatus.Shipped;
 
-            await OnOrderShippedAsync(order);
-            
+            var args = new OrderEventArgs(order, "Order shipped successfully");
+            await _producer.ProduceAsync(OrderShippedTopic, order.Id.ToString(), args);
+
+            Console.WriteLine($"Order #{order.Id} published to {OrderShippedTopic}");
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
-            Console.WriteLine("Oder shipment was cancelled");
-            
+            Console.WriteLine("Order shipment was cancelled.");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine($"{ex.Message}");
-            
         }
     }
-
-   
-
-    // helpers - raise the events - loop though the subscribers and start them in parallel.
-    protected virtual async Task OnOrderPlaced(Order order)
+    protected virtual async Task OnOrderPlacedAsync(Order order)
     {
-        var args = new OrderEventArgs(order, "Order places successfully");
+        var args = new OrderEventArgs(order, "Order placed successfully");
         await Task.WhenAll(_orderPlacedHandlers.Select(h => h.OnOrderPlacedAsync(this, args)));
     }
 

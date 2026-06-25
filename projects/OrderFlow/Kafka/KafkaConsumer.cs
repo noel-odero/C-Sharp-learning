@@ -18,9 +18,7 @@ public class KafkaConsumer : IDisposable
         {
             BootstrapServers = BootstrapServers,
             GroupId = groupId,
-            // Read from the beginning if no offset exists for this group
             AutoOffsetReset = AutoOffsetReset.Earliest,
-            // We will commit offsets manually for control
             EnableAutoCommit = false
         };
 
