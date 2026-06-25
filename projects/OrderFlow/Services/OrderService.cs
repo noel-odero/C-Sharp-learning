@@ -11,21 +11,12 @@ public class OrderService : IOrderService
     private readonly KafkaProducer _producer;
     private const string OrderPlacedTopic = "order-placed";
     private const string OrderShippedTopic = "order-shipped";
-
-    private readonly List<IOrderPlacedHandler> _orderPlacedHandlers = new();
-    private readonly List<IOrderShippedHandler> _orderShippedHandlers = new();
+    private readonly List<Order> _orders = new();
 
     public OrderService(KafkaProducer producer)
     {
         _producer = producer;
     }
-
-    public void Subscribe(IOrderPlacedHandler handler) => _orderPlacedHandlers.Add(handler);
-    public void Subscribe(IOrderShippedHandler handler) => _orderShippedHandlers.Add(handler);
-    public void Unsubscribe(IOrderPlacedHandler handler) => _orderPlacedHandlers.Remove(handler);
-    public void Unsubscribe(IOrderShippedHandler handler) => _orderShippedHandlers.Remove(handler);
-
-    private readonly List<Order> _orders = new();
 
     public IReadOnlyList<Order> GetOrders() => _orders.AsReadOnly();
 
@@ -80,16 +71,5 @@ public class OrderService : IOrderService
         {
             Console.WriteLine($"{ex.Message}");
         }
-    }
-    protected virtual async Task OnOrderPlacedAsync(Order order)
-    {
-        var args = new OrderEventArgs(order, "Order placed successfully");
-        await Task.WhenAll(_orderPlacedHandlers.Select(h => h.OnOrderPlacedAsync(this, args)));
-    }
-
-    protected virtual async Task OnOrderShippedAsync(Order order)
-    {
-        var args = new OrderEventArgs(order, "Order shipped successfully");
-        await Task.WhenAll(_orderShippedHandlers.Select(h => h.OnOrderShippedAsync(this, args)));
     }
 }
