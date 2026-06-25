@@ -9,7 +9,7 @@ public class MenuRunner
     private readonly Customer _customer;
     private int _orderCounter = 1;
 
-    private readonly Dictionary<string, decimal> _catalogue = new()
+    private readonly Dictionary<string, decimal> _catalogue = new(StringComparer.OrdinalIgnoreCase)
     {
         { "T-Shirt", 19.99m },
         { "Sweater", 45.99m },
@@ -63,7 +63,7 @@ public class MenuRunner
         Console.WriteLine("\n--- Available Products ---");
         foreach (var item in _catalogue)
         {
-            Console.WriteLine($"{item.Key} — {item.Value:C}");
+            Console.WriteLine($"{item.Key} - {item.Value:C}");
         }
 
         Console.Write("\nProduct name: ");

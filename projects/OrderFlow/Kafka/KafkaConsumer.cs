@@ -10,7 +10,6 @@ public class KafkaConsumer : IDisposable
     private readonly KafkaProducer _dlqProducer;
     private readonly string _groupId;
     private readonly int _maxRetries = 3;
-    private bool _running = false;
     private const string BootstrapServers = "localhost:9092";
 
     public KafkaConsumer(string groupId, KafkaProducer dlqProducer)
@@ -35,13 +34,12 @@ public class KafkaConsumer : IDisposable
         CancellationToken cancellationToken)
     {
         _consumer.Subscribe(topic);
-        _running = true;
 
         Console.WriteLine($"[{_groupId}] Subscribed to topic: {topic}");
 
         await Task.Run(async () =>
         {
-            while (_running && !cancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
@@ -60,7 +58,8 @@ public class KafkaConsumer : IDisposable
 
                      var success = await RetryAsync(
                         () => handler(result.Message.Key, message),
-                        _maxRetries);
+                        _maxRetries,
+                        cancellationToken);
 
                     if (success)
                     {
@@ -93,7 +92,10 @@ public class KafkaConsumer : IDisposable
         }, cancellationToken);
     }
 
-    private async Task<bool> RetryAsync(Func<Task> action, int maxRetries)
+    private async Task<bool> RetryAsync(
+    Func<Task> action,
+    int maxRetries,
+    CancellationToken cancellationToken)
     {
         for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
@@ -102,16 +104,23 @@ public class KafkaConsumer : IDisposable
                 await action();
                 return true;
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"[{_groupId}] Attempt {attempt}/{maxRetries} " +
-                                 $"failed: {ex.Message}");
+                                $"failed: {ex.Message}");
 
                 if (attempt < maxRetries)
                 {
-                    var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
-                    Console.WriteLine($"[{_groupId}] Retrying in {delay.TotalSeconds}s...");
-                    await Task.Delay(delay);
+                    var backoff = TimeSpan.FromSeconds(
+                        Math.Min(Math.Pow(2, attempt), 10));
+
+                    Console.WriteLine($"[{_groupId}] Retrying in {backoff.TotalSeconds}s...");
+
+                    await Task.Delay(backoff, cancellationToken);
                 }
             }
         }
@@ -141,8 +150,6 @@ public class KafkaConsumer : IDisposable
         Console.WriteLine($"[{_groupId}] Sending failed message to {dlqTopic}...");
         await _dlqProducer.ProduceAsync(dlqTopic, result.Message.Key, dlqMessage);
     }
-
-    public void Stop() => _running = false;
 
     public void Dispose()
 {
