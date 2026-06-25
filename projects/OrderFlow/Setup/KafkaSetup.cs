@@ -23,10 +23,10 @@ public class KafkaSetup : IDisposable
         InventoryService inventoryService,
         ShippingService shippingService)
     {
-        var emailPlaced = new KafkaConsumer("orderflow-email-group");
-        var inventory = new KafkaConsumer("orderflow-inventory-group");
-        var emailShipped = new KafkaConsumer("orderflow-email-shipped-group");
-        var shipping = new KafkaConsumer("orderflow-shipping-group");
+        var emailPlaced = new KafkaConsumer("orderflow-email-group", _producer);
+        var inventory = new KafkaConsumer("orderflow-inventory-group",  _producer);
+        var emailShipped = new KafkaConsumer("orderflow-email-shipped-group",  _producer);
+        var shipping = new KafkaConsumer("orderflow-shipping-group",  _producer);
 
         _consumers.AddRange(new[] { emailPlaced, inventory, emailShipped, shipping });
 
@@ -57,11 +57,31 @@ public class KafkaSetup : IDisposable
     {
         Console.WriteLine("[KafkaSetup] Shutting down consumers...");
         _cts.Cancel();
+
+        Thread.Sleep(2000);
     }
 
     public void Dispose()
     {
-        _consumers.ForEach(c => c.Dispose());
-        _producer.Dispose();
+        foreach (var consumer in _consumers)
+        {
+            try
+            {
+                consumer.Dispose();
+            }
+            catch
+            {
+                // suppress close errors on shutdown
+            }
+        }
+
+        try
+        {
+            _producer.Dispose();
+        }
+        catch
+        {
+            // suppress flush errors on shutdown
+        }
     }
 }

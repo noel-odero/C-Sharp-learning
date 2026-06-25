@@ -5,7 +5,7 @@ namespace OrderFlow.Services;
 
 public class InventoryService : IOrderPlacedHandler
 {
-    public async Task OnOrderPlacedAsync(object source, OrderEventArgs args)
+    public async Task OnOrderPlacedAsync(OrderEventArgs args)
     {
         Console.WriteLine($"updating stock...");
         await Task.Delay(1000);

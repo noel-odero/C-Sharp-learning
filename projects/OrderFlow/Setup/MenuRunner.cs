@@ -9,6 +9,15 @@ public class MenuRunner
     private readonly Customer _customer;
     private int _orderCounter = 1;
 
+    private readonly Dictionary<string, decimal> _catalogue = new()
+    {
+        { "T-Shirt", 19.99m },
+        { "Sweater", 45.99m },
+        { "Jeans", 59.99m },
+        { "Jacket", 89.99m },
+        { "Dress", 49.99m }
+    };
+
     public MenuRunner(IOrderService orderService, Customer customer)
     {
         _orderService = orderService;
@@ -51,24 +60,29 @@ public class MenuRunner
 
     private async Task PlaceOrderAsync()
     {
-        Console.Write("Product name: ");
+        Console.WriteLine("\n--- Available Products ---");
+        foreach (var item in _catalogue)
+        {
+            Console.WriteLine($"{item.Key} — {item.Value:C}");
+        }
+
+        Console.Write("\nProduct name: ");
         var product = Console.ReadLine();
 
+        if (string.IsNullOrEmpty(product) || !_catalogue.TryGetValue(product, out decimal price))
+        {
+            Console.WriteLine("Product not found. Please choose from the list.");
+            return;
+        }
+
         Console.Write("Quantity: ");
-        if (!int.TryParse(Console.ReadLine(), out int quantity))
+        if (!int.TryParse(Console.ReadLine(), out int quantity) || quantity <= 0)
         {
-            Console.WriteLine("Invalid quantity. Enter a number");
+            Console.WriteLine("Invalid quantity. Enter a positive number.");
             return;
         }
 
-        Console.Write("Price: ");
-        if (!decimal.TryParse(Console.ReadLine(), out decimal price))
-        {
-            Console.WriteLine("Invalid price. Enter a valid price");
-            return;
-        }
-
-        var order = new Order(_orderCounter++, _customer, product!, quantity, price, OrderStatus.Pending);
+        var order = new Order(_orderCounter++, _customer, product, quantity, price, OrderStatus.Pending);
 
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         await _orderService.PlaceOrderAsync(order, cts.Token);
