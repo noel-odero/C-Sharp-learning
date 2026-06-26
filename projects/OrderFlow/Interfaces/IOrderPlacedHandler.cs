@@ -5,5 +5,5 @@ namespace OrderFlow.Interfaces;
 
 public interface IOrderPlacedHandler
 {
-    Task OnOrderPlacedAsync(object source, OrderEventArgs args);
+    Task OnOrderPlacedAsync(OrderEventArgs args);
 }

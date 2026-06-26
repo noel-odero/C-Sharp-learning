@@ -6,7 +6,7 @@ namespace OrderFlow.Services;
 
 public class ShippingService : IOrderShippedHandler
     {
-        public async Task OnOrderShippedAsync(object source, OrderEventArgs args)
+        public async Task OnOrderShippedAsync(OrderEventArgs args)
         {
             Console.WriteLine($"\nCreating shipment...");
             await Task.Delay(1000);
